@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distortion Labs - Innovative Software Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c47ff;
+            --secondary-color: #47b0ff;
+            --accent-color: #23f0c7;
+            --dark-bg: #050714;
+            --darker-bg: #030411;
+            --text-color: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Background elements */
+        .bg-gradient {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at 60% 30%, rgba(108, 71, 255, 0.3), transparent 40%),
+                        radial-gradient(circle at 20% 80%, rgba(71, 176, 255, 0.3), transparent 30%);
+            z-index: -1;
+        }
+
+        .bg-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        /* Navigation */
+        .navbar {
+            padding: 30px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.9);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            box-shadow: 0 -6px 0 rgba(255, 255, 255, 0.9), 0 6px 0 rgba(255, 255, 255, 0.9);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .contact-btn {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding: 80px 0;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: inline-block;
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            max-width: 800px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(108, 71, 255, 0.3);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(108, 71, 255, 0.5);
+        }
+
+        .hero-graphics {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 500px;
+            height: 500px;
+            z-index: -1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) {
+            top: 0;
+            right: 100px;
+            background: linear-gradient(135deg, rgba(108, 71, 255, 0.2), rgba(71, 176, 255, 0.2));
+            animation-delay: 0s;
+        }
+
+        .floating-icon:nth-child(2) {
+            top: 150px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(71, 176, 255, 0.2), rgba(35, 240, 199, 0.2));
+            animation-delay: 1s;
+        }
+
+        .floating-icon:nth-child(3) {
+            top: 300px;
+            right: 120px;
+            background: linear-gradient(135deg, rgba(35, 240, 199, 0.2), rgba(108, 71, 255, 0.2));
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 120px 0;
+            background-color: var(--darker-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .section-header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 40px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .feature-card:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin-bottom: 24px;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* About Section */
+        .about {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-text h2 {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+
+        .about-text p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .about-image {
+            flex: 1;
+            position: relative;
+        }
+
+        .about-card {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 16 / 9;
+            background: linear-gradient(135deg, rgba(108, 71, 255, 0.1), rgba(71, 176, 255, 0.1));
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .card-title h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .card-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .card-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat {
+            flex: 1;
+        }
+
+        .stat h4 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .stat p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .contact h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .contact p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            gap: 15px;
+        }
+
+        .contact-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            height: 56px;
+            padding: 0 24px;
+            color: var(--text-color);
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .contact-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .contact-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 0;
+            background-color: var(--darker-bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .footer-logo .logo-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 60px;
+            }
+
+            .hero-graphics {
+                width: 400px;
+                height: 400px;
+            }
+
+            .floating-icon {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .hero p {
+                font-size: 18px;
+            }
+
+            .hero-graphics {
+                position: relative;
+                width: 100%;
+                height: 300px;
+                margin-top: 60px;
+                left: 0;
+                transform: none;
+            }
+
+            .floating-icon:nth-child(1) {
+                top: 0;
+                right: auto;
+                left: 0;
+            }
+
+            .floating-icon:nth-child(2) {
+                top: 100px;
+                right: 0;
+            }
+
+            .floating-icon:nth-child(3) {
+                top: 200px;
+                right: auto;
+                left: 100px;
+            }
+
+            .about-content {
+                flex-direction: column;
+                gap: 60px;
+            }
+
+            .about-card {
+                max-width: 100%;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .section-header h2 {
+                font-size: 36px;
+            }
+
+            .about-text h2 {
+                font-size: 36px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .contact h2 {
+                font-size: 36px;
+            }
+
+            .contact-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    Distortion Labs
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <button class="contact-btn">Contact Us</button>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">Innovation in Software</div>
+            <h1>Creating <span class="gradient-text">Exceptional</span> Software Experiences</h1>
+            <p>Distortion Labs crafts innovative extensions and applications that transform how you interact with technology. Experience software reimagined.</p>
+            <button class="cta-btn">
+                Get Started
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        <div class="hero-graphics">
+            <div class="floating-icon">
+                <i class="fas fa-code" style="color: rgba(255, 255, 255, 0.9);"></i>
+            </div>
+            <div class="floating-icon">
+                <i class="fas fa-puzzle-piece" style="color: rgba(255, 255, 255, 0.9);"></i>
+            </div>
+            <div class="floating-icon">
+                <i class="fas fa-mobile-alt" style="color: rgba(255, 255, 255, 0.9);"></i>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Cutting-Edge <span class="gradient-text">Solutions</span></h2>
+                <p>Explore our suite of innovative software products designed to enhance productivity and streamline your digital experience.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-plug" style="color: rgba(255, 255, 255, 0.9);"></i>
+                    </div>
+                    <h3>Browser Extensions</h3>
+                    <p>Powerful browser extensions that enhance your web experience with seamless integration and advanced functionality.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt" style="color: rgba(255, 255, 255, 0.9);"></i>
+                    </div>
+                    <h3>Mobile Applications</h3>
+                    <p>Intuitive mobile apps crafted with precision to deliver exceptional performance and user experience on any device.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-desktop" style="color: rgba(255, 255, 255, 0.9);"></i>
+                    </div>
+                    <h3>Desktop Software</h3>
+                    <p>Robust desktop applications designed to maximize productivity with powerful features and elegant interfaces.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram" style="color: rgba(255, 255, 255, 0.9);"></i>
+                    </div>
+                    <h3>API Integration</h3>
+                    <p>Seamless API solutions that connect your systems and applications for enhanced functionality and data flow.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt" style="color: rgba(255, 255, 255, 0.9);"></i>
+                    </div>
+                    <h3>Security Tools</h3>
+                    <p>Advanced security extensions and applications to protect your digital presence and sensitive information.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs" style="color: rgba(255, 255, 255, 0.9);"></i>
+                    </div>
+                    <h3>Custom Solutions</h3>
+                    <p>Tailored software solutions designed to address specific challenges and requirements for your unique needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Crafted with <span class="gradient-text">Precision</span></h2>
+                    <p>At Distortion Labs, innovation is at the heart of everything we create. Our software is meticulously designed to solve real problems while delivering exceptional user experiences.</p>
+                    <p>With a focus on clean code, intuitive interfaces, and robust functionality, our extensions and applications are built to exceed expectations and transform how you interact with technology.</p>
+                    <button class="cta-btn">
+                        Learn More
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="about-image">
+                    <div class="about-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-rocket" style="color: rgba(255, 255, 255, 0.9);"></i>
+                            </div>
+                            <div class="card-title">
+                                <h3>Our Progress</h3>
+                                <p>Growing impact and innovation</p>
+                            </div>
+                        </div>
+                        <div class="card-stats">
+                            <div class="stat">
+                                <h4>10+</h4>
+                                <p>Products</p>
+                            </div>
+                            <div class="stat">
+                                <h4>5k+</h4>
+                                <p>Users</p>
+                            </div>
+                            <div class="stat">
+                                <h4>99%</h4>
+                                <p>Satisfaction</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <h2>Ready to <span class="gradient-text">Transform</span> Your Experience?</h2>
+            <p>Subscribe to our newsletter to receive updates on new products, features, and exclusive offers.</p>
+            <form class="contact-form">
+                <input type="email" class="contact-input" placeholder="Enter your email">
+                <button class="cta-btn" type="submit">
+                    Subscribe
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-icon"></div>
+                    Distortion Labs
+                </div>
+                <div class="footer-links">
+                    <a href="#features">Features</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Contact button functionality
+        document.querySelector('.contact-btn').addEventListener('click', function() {
+            document.querySelector('#contact').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
