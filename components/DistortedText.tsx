@@ -10,45 +10,49 @@ interface DistortedTextProps {
 export default function DistortedText({ children, className = '' }: DistortedTextProps) {
   const [isClient, setIsClient] = useState(false)
   const textRef = useRef<SVGTextElement>(null)
-  const [textWidth, setTextWidth] = useState(400)
-  const [textHeight, setTextHeight] = useState(80)
+  const containerRef = useRef<HTMLSpanElement>(null)
+  const [dimensions, setDimensions] = useState({ width: 500, height: 120 })
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
+  // Measure the text size after render
   useEffect(() => {
     if (textRef.current && isClient) {
       const bbox = textRef.current.getBBox()
-      setTextWidth(bbox.width + 40)
-      setTextHeight(bbox.height + 20)
+      setDimensions({
+        width: Math.ceil(bbox.width + 50),
+        height: Math.ceil(bbox.height + 30)
+      })
     }
   }, [isClient, children])
 
   // Generate unique IDs for filters
   const filterId = 'distort-filter'
-  const turbulenceId = 'turbulence'
 
   return (
-    <span className={`inline-block align-middle ${className}`}>
+    <span
+      ref={containerRef}
+      className={`inline-block ${className}`}
+      style={{ lineHeight: 1 }}
+    >
       <svg
-        viewBox={`0 0 ${textWidth} ${textHeight}`}
-        width={textWidth}
-        height={textHeight}
+        viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         className="overflow-visible distorted-svg"
         style={{
-          display: 'inline-block',
-          verticalAlign: 'middle',
-          maxWidth: '100%',
-          height: 'auto'
+          display: 'block',
+          width: '100%',
+          height: 'auto',
+          maxWidth: `${dimensions.width}px`,
         }}
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           {/* Turbulence filter for organic distortion */}
           <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
             {/* Create organic noise pattern */}
             <feTurbulence
-              id={turbulenceId}
               type="fractalNoise"
               baseFrequency="0.015 0.02"
               numOctaves="2"
@@ -104,13 +108,12 @@ export default function DistortedText({ children, className = '' }: DistortedTex
 
         {/* Shadow/echo layer */}
         <text
-          x="20"
-          y={textHeight * 0.75}
-          className="distorted-text-shadow"
+          x="25"
+          y={dimensions.height * 0.72}
           fill="rgba(168, 85, 247, 0.3)"
           filter={`url(#${filterId})`}
           style={{
-            fontSize: 'clamp(2rem, 8vw, 4rem)',
+            fontSize: '72px',
             fontFamily: 'var(--font-outfit), sans-serif',
             fontWeight: 700,
           }}
@@ -121,13 +124,12 @@ export default function DistortedText({ children, className = '' }: DistortedTex
         {/* Main text with distortion */}
         <text
           ref={textRef}
-          x="20"
-          y={textHeight * 0.75}
-          className="distorted-text-main"
+          x="25"
+          y={dimensions.height * 0.72}
           fill="url(#textGradient)"
           filter={`url(#${filterId})`}
           style={{
-            fontSize: 'clamp(2rem, 8vw, 4rem)',
+            fontSize: '72px',
             fontFamily: 'var(--font-outfit), sans-serif',
             fontWeight: 700,
           }}

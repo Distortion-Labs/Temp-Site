@@ -54,7 +54,7 @@ export default function Header() {
         <div className="container-main">
           <nav
             className={`relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500 ${
-              isScrolled ? 'glass-strong' : ''
+              isScrolled ? 'glass-strong' : 'glass-mobile md:bg-transparent md:border-transparent md:backdrop-blur-none'
             }`}
           >
             {/* Logo */}
