@@ -2,37 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
-
-// Chromatic Aberration Text Component
-function GlitchText({ children }: { children: string }) {
-  return (
-    <span className="glitch-wrapper relative inline-block">
-      {/* Base text */}
-      <span className="relative z-10 text-white">{children}</span>
-      {/* Red channel - offset left */}
-      <span
-        className="glitch-layer glitch-red absolute inset-0 text-[#ff0000] opacity-70"
-        aria-hidden="true"
-      >
-        {children}
-      </span>
-      {/* Cyan/Blue channel - offset right */}
-      <span
-        className="glitch-layer glitch-cyan absolute inset-0 text-[#00ffff] opacity-70"
-        aria-hidden="true"
-      >
-        {children}
-      </span>
-      {/* Green channel - slight offset */}
-      <span
-        className="glitch-layer glitch-green absolute inset-0 text-[#00ff00] opacity-40 hidden sm:block"
-        aria-hidden="true"
-      >
-        {children}
-      </span>
-    </span>
-  )
-}
+import DistortedText from './DistortedText'
 
 export default function Hero() {
   const scrollToSection = (href: string) => {
@@ -77,12 +47,11 @@ export default function Hero() {
           </span>
         </div>
 
-        {/* Main heading with chromatic aberration effect */}
-        <h1 className="font-display text-display-xl font-bold tracking-tight mb-4 sm:mb-6 text-balance">
+        {/* Main heading with magical distortion effect */}
+        <h1 className="font-display text-display-xl font-bold tracking-tight mb-4 sm:mb-6">
           <span className="text-white">Software that</span>
-          <br className="hidden sm:block" />
-          <span className="inline-block"> </span>
-          <GlitchText>bends reality</GlitchText>
+          <br />
+          <DistortedText>bends reality</DistortedText>
         </h1>
 
         {/* Subheading */}
