@@ -128,6 +128,14 @@
     pointer-events: none;
   }
 
+  /* Mobile header glass - lightweight blur for header visibility */
+  .glass-mobile {
+    background: rgba(10, 10, 20, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
   /* Enable backdrop-filter only on desktop for performance */
   @media (min-width: 768px) {
     .glass {
