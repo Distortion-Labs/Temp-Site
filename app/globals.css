@@ -128,12 +128,13 @@
     pointer-events: none;
   }
 
-  /* Mobile header glass - lightweight blur for header visibility */
-  .glass-mobile {
-    background: rgba(10, 10, 20, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  /* Heavy frosted glass for scrolled header */
+  .glass-frosted {
+    background: rgba(10, 10, 30, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   /* Enable backdrop-filter only on desktop for performance */
