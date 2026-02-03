@@ -84,25 +84,21 @@ export default function About() {
               </div>
             </div>
 
-            {/* Principles - Mobile: 2x2, Desktop: 2x2 */}
+            {/* Principles - Mobile: 2x2, Desktop: 2x2 - no staggered delays */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {principles.map((principle, index) => (
-                <motion.div
+              {principles.map((principle) => (
+                <div
                   key={principle.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
                   className="group p-4 sm:p-5 rounded-xl sm:rounded-2xl glass-card"
                 >
-                  <principle.icon className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" />
+                  <principle.icon className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400 mb-2 sm:mb-3 sm:group-hover:scale-110 transition-transform duration-300" />
                   <h4 className="font-medium text-sm sm:text-base text-white mb-1">
                     {principle.title}
                   </h4>
                   <p className="text-xs sm:text-sm text-white/40 leading-relaxed">
                     {principle.description}
                   </p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </motion.div>
