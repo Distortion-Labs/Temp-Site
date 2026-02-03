@@ -1,183 +1,180 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Sparkles, Target, Users, Award, Rocket } from 'lucide-react'
+import { Code2, Lightbulb, Heart, Rocket } from 'lucide-react'
 
-const values = [
+const principles = [
   {
-    icon: Target,
-    title: 'Precision',
-    description: 'Every line of code is crafted with purpose and attention to detail.',
+    icon: Code2,
+    title: 'Clean Code',
+    description: 'We write code that\'s readable, maintainable, and built to last.',
+  },
+  {
+    icon: Lightbulb,
+    title: 'User First',
+    description: 'Every feature starts with a real problem that needs solving.',
+  },
+  {
+    icon: Heart,
+    title: 'Open Source',
+    description: 'We believe in transparency and giving back to the community.',
   },
   {
     icon: Rocket,
-    title: 'Innovation',
-    description: 'We push boundaries and embrace cutting-edge technologies.',
-  },
-  {
-    icon: Users,
-    title: 'Collaboration',
-    description: 'Working closely with clients to bring their visions to life.',
-  },
-  {
-    icon: Award,
-    title: 'Excellence',
-    description: 'Committed to delivering products that exceed expectations.',
+    title: 'Ship Fast',
+    description: 'We iterate quickly and learn from real user feedback.',
   },
 ]
 
 export default function About() {
   return (
-    <section id="about" className="section-padding relative overflow-hidden">
+    <section id="about" className="section-space relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent-500/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] orb orb-cyan opacity-15 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] orb orb-purple opacity-15 pointer-events-none" />
 
-      <div className="container-custom relative">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Left content */}
+      <div className="container-main relative">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12 sm:mb-16"
+        >
+          <span className="inline-block px-3 py-1.5 mb-4 text-xs sm:text-sm font-medium text-primary-400 rounded-full glass-subtle">
+            About Us
+          </span>
+          <h2 className="font-display text-display-md font-bold text-white mb-4 text-balance">
+            A small team with
+            <span className="text-gradient"> big ambitions</span>
+          </h2>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          {/* Left content - Story */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6 }}
           >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-sm font-medium text-accent-300 rounded-full glass border border-accent-500/20">
-              <Sparkles className="w-4 h-4" />
-              About Us
-            </span>
+            <div className="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-6">
+              <h3 className="font-display text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-3">
+                <span className="w-8 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full" />
+                Our Story
+              </h3>
+              <div className="space-y-4 text-sm sm:text-base text-white/50 leading-relaxed">
+                <p>
+                  Distortion Labs started with a simple idea: build tools that we
+                  actually want to use. As developers ourselves, we got tired of
+                  clunky software that overcomplicates simple tasks.
+                </p>
+                <p>
+                  Our first product, Multi-Finder Pro, came from a real need.
+                  We wanted to search for multiple terms on a webpage without
+                  opening multiple find dialogs. So we built it.
+                </p>
+                <p>
+                  We&apos;re not a big company with hundreds of employees.
+                  We&apos;re a small, focused team that cares deeply about
+                  craft and user experience. Every product we ship is
+                  something we use daily.
+                </p>
+              </div>
+            </div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-              Building the Future of
-              <span className="text-gradient"> Digital Innovation</span>
-            </h2>
-
-            <p className="text-lg text-white/60 mb-6 leading-relaxed">
-              At Distortion Labs, we believe in the power of technology to
-              transform ideas into reality. Our team of passionate developers
-              and designers work together to create software that makes a
-              difference.
-            </p>
-
-            <p className="text-white/50 mb-8 leading-relaxed">
-              Founded with a vision to deliver exceptional software experiences,
-              we&apos;ve grown into a trusted partner for businesses and individuals
-              seeking innovative digital solutions. Our commitment to quality
-              and user-centric design sets us apart.
-            </p>
-
-            {/* Values grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {values.map((value, index) => (
+            {/* Principles - Mobile: 2x2, Desktop: 2x2 */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              {principles.map((principle, index) => (
                 <motion.div
-                  key={value.title}
+                  key={principle.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1, duration: 0.5 }}
-                  className="group p-4 rounded-2xl glass-card hover:bg-white/[0.08] transition-all duration-300"
+                  className="group p-4 sm:p-5 rounded-xl sm:rounded-2xl glass-card"
                 >
-                  <value.icon className="w-6 h-6 text-primary-400 mb-2 group-hover:scale-110 transition-transform duration-300" />
-                  <h4 className="font-semibold text-white mb-1">
-                    {value.title}
+                  <principle.icon className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300" />
+                  <h4 className="font-medium text-sm sm:text-base text-white mb-1">
+                    {principle.title}
                   </h4>
-                  <p className="text-sm text-white/50">{value.description}</p>
+                  <p className="text-xs sm:text-sm text-white/40 leading-relaxed">
+                    {principle.description}
+                  </p>
                 </motion.div>
               ))}
             </div>
           </motion.div>
 
-          {/* Right - Visual element */}
+          {/* Right - What we're building */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
           >
-            {/* Main card */}
-            <div className="relative">
-              {/* Floating decorative elements */}
-              <motion.div
-                animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-6 -right-6 w-24 h-24 rounded-2xl glass border border-primary-500/30 flex items-center justify-center"
-              >
-                <div className="text-3xl font-bold text-gradient">10+</div>
-              </motion.div>
+            <div className="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 overflow-hidden relative">
+              {/* Gradient accent */}
+              <div className="absolute -top-20 -right-20 w-40 h-40 orb orb-purple opacity-30" />
 
-              <motion.div
-                animate={{ y: [0, 10, 0], rotate: [0, -5, 0] }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                  delay: 0.5,
-                }}
-                className="absolute -bottom-4 -left-4 w-20 h-20 rounded-xl glass border border-accent-500/30 flex items-center justify-center"
-              >
-                <div className="text-2xl font-bold text-accent-400">5K+</div>
-              </motion.div>
+              <h3 className="font-display text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-3 relative">
+                <span className="w-8 h-0.5 bg-gradient-to-r from-cyan-500 to-primary-500 rounded-full" />
+                What We Focus On
+              </h3>
 
-              {/* Main glass card */}
-              <div className="relative p-8 md:p-10 rounded-3xl glass-strong overflow-hidden">
-                {/* Gradient orbs */}
-                <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary-500/20 rounded-full blur-[60px]" />
-                <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-accent-500/20 rounded-full blur-[60px]" />
-
-                {/* Content */}
-                <div className="relative space-y-8">
-                  {/* Mission */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                      <span className="w-8 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full" />
-                      Our Mission
-                    </h3>
-                    <p className="text-white/60 leading-relaxed">
-                      To empower individuals and businesses with software
-                      solutions that are not just functional, but delightful to
-                      use. We strive to set new standards in quality and
-                      innovation.
-                    </p>
+              <div className="space-y-6 relative">
+                {/* Browser Extensions */}
+                <div className="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-cyan-500" />
+                    <h4 className="font-medium text-white">Browser Extensions</h4>
                   </div>
-
-                  {/* Approach */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                      <span className="w-8 h-0.5 bg-gradient-to-r from-accent-500 to-primary-500 rounded-full" />
-                      Our Approach
-                    </h3>
-                    <p className="text-white/60 leading-relaxed">
-                      We combine technical expertise with creative thinking to
-                      deliver solutions that are both powerful and intuitive.
-                      Every project is an opportunity to innovate.
-                    </p>
-                  </div>
-
-                  {/* Stats row */}
-                  <div className="pt-6 border-t border-white/10">
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-white mb-1">
-                          99%
-                        </div>
-                        <div className="text-xs text-white/40">Satisfaction</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-white mb-1">
-                          24/7
-                        </div>
-                        <div className="text-xs text-white/40">Support</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-white mb-1">
-                          50+
-                        </div>
-                        <div className="text-xs text-white/40">Projects</div>
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-sm text-white/40 leading-relaxed">
+                    Chrome extensions that enhance your browsing experience.
+                    We build tools that integrate seamlessly with your workflow.
+                  </p>
                 </div>
+
+                {/* Web Applications */}
+                <div className="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-primary-500" />
+                    <h4 className="font-medium text-white">Web Applications</h4>
+                  </div>
+                  <p className="text-sm text-white/40 leading-relaxed">
+                    Modern web apps built with React and TypeScript.
+                    Fast, accessible, and designed for real-world use.
+                  </p>
+                </div>
+
+                {/* Mobile Apps */}
+                <div className="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-rose-500" />
+                    <h4 className="font-medium text-white">Mobile Apps</h4>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/40">Coming Soon</span>
+                  </div>
+                  <p className="text-sm text-white/40 leading-relaxed">
+                    Cross-platform mobile applications.
+                    Currently in the planning phase.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tech we use */}
+            <div className="mt-6 p-5 sm:p-6 glass-subtle rounded-xl sm:rounded-2xl">
+              <p className="text-xs sm:text-sm text-white/40 mb-3">Technologies we work with</p>
+              <div className="flex flex-wrap gap-2">
+                {['React', 'TypeScript', 'Next.js', 'Chrome APIs', 'Node.js', 'Tailwind'].map((tech) => (
+                  <span
+                    key={tech}
+                    className="px-3 py-1.5 text-xs font-mono text-white/50 bg-white/[0.03] rounded-lg border border-white/[0.05]"
+                  >
+                    {tech}
+                  </span>
+                ))}
               </div>
             </div>
           </motion.div>
