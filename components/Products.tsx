@@ -93,15 +93,11 @@ export default function Products() {
                 locate multiple terms in long documents.
               </p>
 
-              {/* Features grid */}
+              {/* Features grid - no staggered delays for faster load */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
-                {features.map((feature, index) => (
-                  <motion.div
+                {features.map((feature) => (
+                  <div
                     key={feature.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
                     className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
@@ -111,7 +107,7 @@ export default function Products() {
                       <h4 className="font-medium text-white mb-1">{feature.title}</h4>
                       <p className="text-sm text-white/40">{feature.description}</p>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 

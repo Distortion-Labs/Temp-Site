@@ -72,22 +72,18 @@
     @apply py-16 sm:py-20 md:py-28 lg:py-36;
   }
 
-  /* Liquid Glass System */
+  /* Liquid Glass System - Optimized for mobile */
   .glass {
     background: linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.08) 0%,
       rgba(255, 255, 255, 0.04) 100%
     );
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-subtle {
     background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
@@ -97,8 +93,6 @@
       rgba(255, 255, 255, 0.12) 0%,
       rgba(255, 255, 255, 0.06) 100%
     );
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(40px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.4),
@@ -112,8 +106,6 @@
       rgba(255, 255, 255, 0.07) 0%,
       rgba(255, 255, 255, 0.02) 100%
     );
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.3),
@@ -136,17 +128,40 @@
     pointer-events: none;
   }
 
-  .glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-4px);
-    box-shadow:
-      0 12px 40px rgba(0, 0, 0, 0.4),
-      0 0 60px -20px rgba(168, 85, 247, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
+  /* Enable backdrop-filter only on desktop for performance */
+  @media (min-width: 768px) {
+    .glass {
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+    }
 
-  .glass-card:hover::before {
-    opacity: 1;
+    .glass-subtle {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .glass-strong {
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+    }
+
+    .glass-card {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.4),
+        0 0 60px -20px rgba(168, 85, 247, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-card:hover::before {
+      opacity: 1;
+    }
   }
 
   /* Typography */
@@ -212,24 +227,35 @@
 
   .btn-glass {
     background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
   }
 
-  .btn-glass:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+  @media (min-width: 768px) {
+    .btn-glass {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
   }
 
-  /* Glow orbs */
+  /* Glow orbs - optimized for mobile */
   .orb {
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(40px);
     pointer-events: none;
+  }
+
+  @media (min-width: 768px) {
+    .orb {
+      filter: blur(80px);
+    }
   }
 
   .orb-purple {
@@ -274,6 +300,88 @@
       background-position: 100% 50%;
     }
   }
+
+  /* Fast fade in up - for immediate content display */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out forwards;
+  }
+
+  /* Delayed fade in */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-fade-in-delay {
+    opacity: 0;
+    animation: fade-in 0.5s ease-out 0.6s forwards;
+  }
+
+  .animate-fade-in-delay-2 {
+    opacity: 0;
+    animation: fade-in 0.5s ease-out 0.8s forwards;
+  }
+
+  /* Lightweight float animations - CSS-only, better performance */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+
+  @keyframes float-alt {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -30px); }
+  }
+
+  @keyframes float-slower {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-25px, 20px); }
+  }
+
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
+  }
+
+  .animate-float-alt {
+    animation: float-alt 6s ease-in-out infinite;
+  }
+
+  /* Orb animations - only on desktop for performance */
+  @media (min-width: 768px) {
+    .animate-float-slow {
+      animation: float-slow 20s ease-in-out infinite;
+    }
+
+    .animate-float-slower {
+      animation: float-slower 25s ease-in-out infinite;
+    }
+  }
+
+  /* Slow bounce for scroll indicator */
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
 }
 
 /* Mobile-specific fixes */
@@ -299,22 +407,35 @@
   pointer-events: none;
 }
 
-/* Red channel - offset to the left with animation */
+/* Mobile: Simple static offset for performance */
 .glitch-red {
-  animation: glitch-red 3s infinite ease-in-out;
-  clip-path: inset(0);
+  transform: translate(-2px, 0);
 }
 
-/* Cyan channel - offset to the right with animation */
 .glitch-cyan {
-  animation: glitch-cyan 3s infinite ease-in-out;
-  clip-path: inset(0);
+  transform: translate(2px, 0);
 }
 
-/* Green channel - subtle offset */
 .glitch-green {
-  animation: glitch-green 3s infinite ease-in-out;
-  clip-path: inset(0);
+  transform: translate(0, 1px);
+}
+
+/* Desktop: Enable animations */
+@media (min-width: 768px) {
+  .glitch-red {
+    animation: glitch-red 3s infinite ease-in-out;
+    clip-path: inset(0);
+  }
+
+  .glitch-cyan {
+    animation: glitch-cyan 3s infinite ease-in-out;
+    clip-path: inset(0);
+  }
+
+  .glitch-green {
+    animation: glitch-green 3s infinite ease-in-out;
+    clip-path: inset(0);
+  }
 }
 
 /* Glitch animations with chromatic split */
@@ -427,17 +548,19 @@
   }
 }
 
-/* Hover intensify effect */
-.glitch-wrapper:hover .glitch-red {
-  animation: glitch-red-intense 0.5s infinite;
-}
+/* Hover intensify effect - desktop only */
+@media (min-width: 768px) {
+  .glitch-wrapper:hover .glitch-red {
+    animation: glitch-red-intense 0.5s infinite;
+  }
 
-.glitch-wrapper:hover .glitch-cyan {
-  animation: glitch-cyan-intense 0.5s infinite;
-}
+  .glitch-wrapper:hover .glitch-cyan {
+    animation: glitch-cyan-intense 0.5s infinite;
+  }
 
-.glitch-wrapper:hover .glitch-green {
-  animation: glitch-green-intense 0.5s infinite;
+  .glitch-wrapper:hover .glitch-green {
+    animation: glitch-green-intense 0.5s infinite;
+  }
 }
 
 @keyframes glitch-red-intense {
@@ -509,32 +632,34 @@
   }
 }
 
-/* Scanline overlay effect on the glitch text */
-.glitch-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.1) 0px,
-    rgba(0, 0, 0, 0.1) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  pointer-events: none;
-  opacity: 0.3;
-  animation: scanlines 0.1s infinite linear;
-}
-
-@keyframes scanlines {
-  0% {
-    background-position: 0 0;
+/* Scanline overlay effect on the glitch text - desktop only */
+@media (min-width: 768px) {
+  .glitch-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.1) 0px,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    opacity: 0.3;
+    animation: scanlines 0.1s infinite linear;
   }
-  100% {
-    background-position: 0 3px;
+
+  @keyframes scanlines {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 3px;
+    }
   }
 }
 
