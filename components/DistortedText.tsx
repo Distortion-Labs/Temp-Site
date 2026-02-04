@@ -95,7 +95,6 @@ export default function DistortedText({ children, className = '' }: DistortedTex
           {/* Main distortion filter */}
           <filter id="distort-main" x="-30%" y="-30%" width="160%" height="160%">
             <feTurbulence
-              ref={turbulenceRef}
               type="fractalNoise"
               baseFrequency={`${baseFreqX} ${baseFreqY}`}
               numOctaves="3"
@@ -103,7 +102,6 @@ export default function DistortedText({ children, className = '' }: DistortedTex
               result="noise"
             />
             <feDisplacementMap
-              ref={displacementRef}
               in="SourceGraphic"
               in2="noise"
               scale={displacementScale}
