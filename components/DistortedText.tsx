@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 interface DistortedTextProps {
   children: string
@@ -9,37 +9,77 @@ interface DistortedTextProps {
 
 export default function DistortedText({ children, className = '' }: DistortedTextProps) {
   const [isClient, setIsClient] = useState(false)
-  const textRef = useRef<SVGTextElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLSpanElement>(null)
-  const [dimensions, setDimensions] = useState({ width: 500, height: 120 })
+  const textRef = useRef<SVGTextElement>(null)
+  const [dimensions, setDimensions] = useState({ width: 600, height: 100 })
+  const [fontSize, setFontSize] = useState(48)
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
+  const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  // Get the computed font size from parent
+  useEffect(() => {
+    if (containerRef.current && isClient) {
+      const computed = window.getComputedStyle(containerRef.current)
+      const size = parseFloat(computed.fontSize)
+      setFontSize(size)
+    }
+  }, [isClient])
 
   // Measure the text size after render
   useEffect(() => {
     if (textRef.current && isClient) {
       const bbox = textRef.current.getBBox()
       setDimensions({
-        width: Math.ceil(bbox.width + 50),
-        height: Math.ceil(bbox.height + 30)
+        width: Math.ceil(bbox.width + 80),
+        height: Math.ceil(bbox.height + 50)
       })
     }
-  }, [isClient, children])
+  }, [isClient, children, fontSize])
 
-  // Generate unique IDs for filters
-  const filterId = 'distort-filter'
+  // Handle mouse movement for interactive displacement
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    if (!svgRef.current) return
+    const rect = svgRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+    setMousePos({ x, y })
+  }, [])
+
+  const handleMouseEnter = () => setIsHovering(true)
+  const handleMouseLeave = () => {
+    setIsHovering(false)
+    setMousePos({ x: 0.5, y: 0.5 })
+  }
+
+  // Calculate displacement based on mouse position
+  const baseScale = isHovering ? 28 : 20
+  const mouseInfluence = isHovering ? 20 : 0
+  const displacementScale = baseScale + (mousePos.x - 0.5) * mouseInfluence
+
+  // Chromatic aberration offsets based on mouse
+  const redOffset = isHovering ? (mousePos.x - 0.5) * -12 : -3
+  const cyanOffset = isHovering ? (mousePos.x - 0.5) * 12 : 3
+  const greenOffsetY = isHovering ? (mousePos.y - 0.5) * 6 : 1
+
+  // Dynamic turbulence frequency based on mouse Y
+  const baseFreqX = 0.012 + (isHovering ? (mousePos.y - 0.5) * 0.01 : 0)
+  const baseFreqY = 0.015 + (isHovering ? (mousePos.x - 0.5) * 0.01 : 0)
 
   return (
     <span
       ref={containerRef}
       className={`inline-block ${className}`}
-      style={{ lineHeight: 1 }}
+      style={{ lineHeight: 1, fontSize: 'inherit' }}
     >
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-        className="overflow-visible distorted-svg"
+        className="overflow-visible distorted-svg cursor-crosshair"
         style={{
           display: 'block',
           width: '100%',
@@ -47,89 +87,136 @@ export default function DistortedText({ children, className = '' }: DistortedTex
           maxWidth: `${dimensions.width}px`,
         }}
         preserveAspectRatio="xMidYMid meet"
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <defs>
-          {/* Turbulence filter for organic distortion */}
-          <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-            {/* Create organic noise pattern */}
+          {/* Main distortion filter */}
+          <filter id="distort-main" x="-30%" y="-30%" width="160%" height="160%">
+            <feTurbulence
+              ref={turbulenceRef}
+              type="fractalNoise"
+              baseFrequency={`${baseFreqX} ${baseFreqY}`}
+              numOctaves="3"
+              seed="5"
+              result="noise"
+            />
+            <feDisplacementMap
+              ref={displacementRef}
+              in="SourceGraphic"
+              in2="noise"
+              scale={displacementScale}
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+
+          {/* Chromatic aberration filters - separate for each color channel */}
+          <filter id="distort-red" x="-30%" y="-30%" width="160%" height="160%">
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.015 0.02"
+              baseFrequency={`${baseFreqX * 1.1} ${baseFreqY}`}
               numOctaves="2"
-              seed="3"
+              seed="7"
               result="noise"
-            >
-              {/* Animate the turbulence for living effect */}
-              {isClient && (
-                <animate
-                  attributeName="baseFrequency"
-                  values="0.015 0.02;0.02 0.015;0.015 0.02"
-                  dur="8s"
-                  repeatCount="indefinite"
-                />
-              )}
-            </feTurbulence>
-
-            {/* Displacement map - warps the text based on noise */}
+            />
             <feDisplacementMap
               in="SourceGraphic"
               in2="noise"
-              scale="12"
+              scale={displacementScale * 1.2}
               xChannelSelector="R"
-              yChannelSelector="G"
-            >
-              {isClient && (
-                <animate
-                  attributeName="scale"
-                  values="8;15;10;12;8"
-                  dur="6s"
-                  repeatCount="indefinite"
-                />
-              )}
-            </feDisplacementMap>
+              yChannelSelector="B"
+            />
           </filter>
 
-          {/* Glow effect */}
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
+          <filter id="distort-cyan" x="-30%" y="-30%" width="160%" height="160%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency={`${baseFreqX} ${baseFreqY * 1.1}`}
+              numOctaves="2"
+              seed="11"
+              result="noise"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale={displacementScale * 1.1}
+              xChannelSelector="G"
+              yChannelSelector="R"
+            />
+          </filter>
+
+          {/* Glow filter */}
+          <filter id="glow-effect" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-
-          {/* Gradient for text */}
-          <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="50%" stopColor="#e0e7ff" />
-            <stop offset="100%" stopColor="#c4b5fd" />
-          </linearGradient>
         </defs>
 
-        {/* Shadow/echo layer */}
+        {/* Red channel - chromatic aberration */}
         <text
-          x="25"
-          y={dimensions.height * 0.72}
-          fill="rgba(168, 85, 247, 0.3)"
-          filter={`url(#${filterId})`}
+          x={40 + redOffset}
+          y={dimensions.height * 0.7}
+          fill="#ff0040"
+          filter="url(#distort-red)"
+          opacity={isHovering ? 0.8 : 0.6}
           style={{
-            fontSize: '72px',
+            fontSize: `${fontSize}px`,
             fontFamily: 'var(--font-outfit), sans-serif',
             fontWeight: 700,
+            mixBlendMode: 'screen',
           }}
         >
           {children}
         </text>
 
-        {/* Main text with distortion */}
+        {/* Cyan channel - chromatic aberration */}
+        <text
+          x={40 + cyanOffset}
+          y={dimensions.height * 0.7}
+          fill="#00ffff"
+          filter="url(#distort-cyan)"
+          opacity={isHovering ? 0.8 : 0.6}
+          style={{
+            fontSize: `${fontSize}px`,
+            fontFamily: 'var(--font-outfit), sans-serif',
+            fontWeight: 700,
+            mixBlendMode: 'screen',
+          }}
+        >
+          {children}
+        </text>
+
+        {/* Green channel - subtle */}
+        <text
+          x={40}
+          y={dimensions.height * 0.7 + greenOffsetY}
+          fill="#00ff80"
+          filter="url(#distort-main)"
+          opacity={isHovering ? 0.5 : 0.3}
+          style={{
+            fontSize: `${fontSize}px`,
+            fontFamily: 'var(--font-outfit), sans-serif',
+            fontWeight: 700,
+            mixBlendMode: 'screen',
+          }}
+        >
+          {children}
+        </text>
+
+        {/* Main white text with distortion */}
         <text
           ref={textRef}
-          x="25"
-          y={dimensions.height * 0.72}
-          fill="url(#textGradient)"
-          filter={`url(#${filterId})`}
+          x={40}
+          y={dimensions.height * 0.7}
+          fill="white"
+          filter="url(#distort-main)"
           style={{
-            fontSize: '72px',
+            fontSize: `${fontSize}px`,
             fontFamily: 'var(--font-outfit), sans-serif',
             fontWeight: 700,
           }}
