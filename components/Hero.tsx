@@ -2,7 +2,15 @@
 
 import { motion } from 'framer-motion'
 import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
-import DistortedText from './DistortedText'
+import dynamic from 'next/dynamic'
+
+// Dynamic import to prevent SSR issues with WebGL
+const WebGLDistortedText = dynamic(() => import('./WebGLDistortedText'), {
+  ssr: false,
+  loading: () => (
+    <span className="text-white opacity-80">bends reality</span>
+  )
+})
 
 export default function Hero() {
   const scrollToSection = (href: string) => {
@@ -47,11 +55,11 @@ export default function Hero() {
           </span>
         </div>
 
-        {/* Main heading with magical distortion effect */}
+        {/* Main heading with WebGL distortion effect */}
         <h1 className="font-display text-display-xl font-bold tracking-tight mb-4 sm:mb-6">
           <span className="text-white">Software that</span>
           <br />
-          <DistortedText>bends reality</DistortedText>
+          <WebGLDistortedText>bends reality</WebGLDistortedText>
         </h1>
 
         {/* Subheading */}
