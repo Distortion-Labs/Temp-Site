@@ -1,18 +1,30 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import DistortedText from './DistortedText'
 
-// Dynamic import to prevent SSR issues with WebGL
+// Dynamic import WebGL version for desktop only
 const WebGLDistortedText = dynamic(() => import('./WebGLDistortedText'), {
   ssr: false,
-  loading: () => (
-    <span className="text-white opacity-80">bends reality</span>
-  )
+  loading: () => <span className="text-white opacity-80">bends reality</span>
 })
 
 export default function Hero() {
+  const [isMobile, setIsMobile] = useState(true) // Default to mobile for SSR
+
+  useEffect(() => {
+    // Check if mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href)
     if (element) {
@@ -55,11 +67,15 @@ export default function Hero() {
           </span>
         </div>
 
-        {/* Main heading with WebGL distortion effect */}
+        {/* Main heading with distortion effect (WebGL on desktop, SVG on mobile) */}
         <h1 className="font-display text-display-xl font-bold tracking-tight mb-4 sm:mb-6">
           <span className="text-white">Software that</span>
           <br />
-          <WebGLDistortedText>bends reality</WebGLDistortedText>
+          {isMobile ? (
+            <DistortedText>bends reality</DistortedText>
+          ) : (
+            <WebGLDistortedText>bends reality</WebGLDistortedText>
+          )}
         </h1>
 
         {/* Subheading */}
