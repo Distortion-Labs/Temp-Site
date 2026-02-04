@@ -12,8 +12,8 @@ export default function DistortedText({ children, className = '' }: DistortedTex
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLSpanElement>(null)
   const textRef = useRef<SVGTextElement>(null)
-  const [dimensions, setDimensions] = useState({ width: 700, height: 120 })
-  const [fontSize, setFontSize] = useState(72)
+  const [dimensions, setDimensions] = useState({ width: 800, height: 140 })
+  const [fontSize, setFontSize] = useState(84)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const [isHovering, setIsHovering] = useState(false)
 
@@ -26,8 +26,8 @@ export default function DistortedText({ children, className = '' }: DistortedTex
     if (containerRef.current && isClient) {
       const computed = window.getComputedStyle(containerRef.current)
       const size = parseFloat(computed.fontSize)
-      // Scale up the font size by 1.15x for bigger text
-      setFontSize(Math.round(size * 1.15))
+      // Scale up the font size by 1.4x for much bigger text
+      setFontSize(Math.round(size * 1.4))
     }
   }, [isClient])
 
