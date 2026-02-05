@@ -4,10 +4,15 @@ import { motion } from 'framer-motion'
 import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-// Dynamic import to prevent SSR issues with canvas
+// Dynamic imports to prevent SSR issues with canvas/WebGL
 const WebGLDistortedText = dynamic(() => import('./WebGLDistortedText'), {
   ssr: false,
   loading: () => <span className="text-white opacity-80">bends reality</span>
+})
+
+const BulgeDistortion = dynamic(() => import('./BulgeDistortion'), {
+  ssr: false,
+  loading: () => null
 })
 
 export default function Hero() {
@@ -19,14 +24,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5">
-      {/* Static orbs - using CSS animations for performance */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="orb orb-purple w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] -top-20 -left-20 sm:-top-40 sm:-left-40 animate-float-slow" />
-        <div className="orb orb-cyan w-[200px] h-[200px] sm:w-[450px] sm:h-[450px] -bottom-20 -right-20 sm:-bottom-32 sm:-right-32 animate-float-slower" />
-        <div className="orb orb-rose w-[150px] h-[150px] sm:w-[300px] sm:h-[300px] top-1/3 -right-10 sm:right-1/4 opacity-60 hidden sm:block" />
-      </div>
-
+    <BulgeDistortion className="min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5">
       {/* Floating glass elements - desktop only */}
       <div className="absolute top-[20%] left-[8%] hidden lg:block animate-fade-in-delay">
         <div className="w-16 h-16 glass-card rounded-2xl flex items-center justify-center animate-float">
@@ -115,6 +113,6 @@ export default function Hero() {
           <ArrowDown className="w-4 h-4" />
         </button>
       </motion.div>
-    </section>
+    </BulgeDistortion>
   )
 }
