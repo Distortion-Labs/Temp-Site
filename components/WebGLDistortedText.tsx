@@ -16,7 +16,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
   const smoothMouseRef = useRef({ x: 0.5, y: 0.5 })
   const isHoveringRef = useRef(false)
   const hoverRef = useRef(0)
-  // Mobile: gyroscope + scroll refs
+  // Gyroscope + scroll refs
   const gyroRef = useRef({ x: 0.5, y: 0.5 })
   const smoothGyroRef = useRef({ x: 0.5, y: 0.5 })
   const scrollRef = useRef(0.5)
@@ -66,33 +66,33 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
 
     // ── Gyroscope handler ──────────────────────────────
     const handleOrientation = (e: DeviceOrientationEvent) => {
-      const gamma = e.gamma || 0 // left-right tilt: -90 to 90
-      const beta = e.beta || 0   // front-back tilt: -180 to 180
+      const gamma = e.gamma || 0
+      const beta = e.beta || 0
       gyroRef.current = {
         x: Math.max(0, Math.min(1, (gamma + 45) / 90)),
         y: Math.max(0, Math.min(1, (beta - 15 + 45) / 90))
       }
     }
 
-    // ── Scroll handler ─────────────────────────────────
+    // ── Scroll handler (active on ALL devices) ────────
     const handleScroll = () => {
       const rect = canvas.getBoundingClientRect()
       const viewH = window.innerHeight
-      // 0 when canvas is at bottom of viewport, 1 when at top
       scrollRef.current = Math.max(0, Math.min(1,
         1 - (rect.top + rect.height / 2) / viewH
       ))
     }
 
-    // Start mobile listeners
+    // Start gyro listeners (mobile only)
     if (isMobile) {
-      // Android / non-iOS: add gyro listener directly
       if (typeof (DeviceOrientationEvent as any).requestPermission !== 'function') {
         window.addEventListener('deviceorientation', handleOrientation)
       }
-      window.addEventListener('scroll', handleScroll, { passive: true })
-      handleScroll()
     }
+
+    // Scroll active on ALL devices
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    handleScroll()
 
     const render = () => {
       const time = (performance.now() - startTime) / 1000
@@ -111,7 +111,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       // Smooth scroll
       smoothScrollRef.current = lerp(smoothScrollRef.current, scrollRef.current, 0.08)
 
-      // Smooth hover transition (no pop-in)
+      // Smooth hover transition
       hoverRef.current = lerp(hoverRef.current, isHoveringRef.current ? 1 : 0, 0.05)
       const h = hoverRef.current
 
@@ -120,35 +120,42 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       const cx = width / 2
       const cy = height / 2
 
-      // Mouse influence (desktop hover)
-      const mx = (sm.x - 0.5) * 35 * h
-      const my = (sm.y - 0.5) * 18 * h
+      // ── MOUSE: always active, hover amplifies ──────
+      // Base ambient tracking + hover boost
+      const mx = (sm.x - 0.5) * (18 + h * 45)
+      const my = (sm.y - 0.5) * (10 + h * 25)
 
-      // Gyro + scroll influence (always active on mobile)
-      const gx = isMobile ? (sg.x - 0.5) * 25 : 0
-      const gy = isMobile ? (sg.y - 0.5) * 15 + (smoothScrollRef.current - 0.5) * 10 : 0
-      const gyroMotion = isMobile ? (Math.abs(sg.x - 0.5) + Math.abs(sg.y - 0.5)) * 2 : 0
+      // ── GYRO: always active on mobile, strong ──────
+      const gx = (sg.x - 0.5) * 60
+      const gy = (sg.y - 0.5) * 40
+
+      // ── SCROLL: always active on all devices, strong ──
+      const sy = (smoothScrollRef.current - 0.5) * 45
+
+      // Combined motion magnitude (for effect scaling)
+      const gyroMotion = (Math.abs(sg.x - 0.5) + Math.abs(sg.y - 0.5)) * 2
+      const scrollMotion = Math.abs(smoothScrollRef.current - 0.5) * 2
 
       // Combined interaction input
       const ix = mx + gx
-      const iy = my + gy
+      const iy = my + gy + sy
 
-      // Unified smooth input position (0-1 range) for angle calculations
+      // Unified input position (0-1) for angle calcs
       const inputX = isMobile ? sg.x : sm.x
       const inputY = isMobile ? sg.y : sm.y
 
-      // Organic time curves at different frequencies
+      // Organic time curves
       const s1 = Math.sin(time * 1.1)
       const c1 = Math.cos(time * 0.85)
       const s2 = Math.sin(time * 1.7 + 1.2)
       const c2 = Math.cos(time * 2.0 + 0.5)
 
-      // Slow breathing modulation (alive quality)
+      // Slow breathing
       const breath = 0.5 + 0.5 * Math.sin(time * 0.7)
 
-      // Shared liquid displacement for all layers
-      const dx = s1 * 0.9 * (1 + h * 0.6) + ix * 0.06
-      const dy = c1 * 0.55 * (1 + h * 0.6) + iy * 0.06
+      // Shared liquid displacement
+      const dx = s1 * 1.2 * (1 + h * 0.8) + ix * 0.08
+      const dy = c1 * 0.8 * (1 + h * 0.8) + iy * 0.08
 
       ctx.font = font
       ctx.textAlign = 'center'
@@ -158,10 +165,10 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       // LAYER 0: Multi-color ambient glow
       // ═══════════════════════════════════════════════════
       ctx.save()
-      ctx.shadowColor = `rgba(130, 80, 230, ${0.35 + h * 0.2 + s1 * 0.06 + breath * 0.05 + gyroMotion * 0.08})`
+      ctx.shadowColor = `rgba(130, 80, 230, ${0.35 + h * 0.2 + s1 * 0.06 + breath * 0.05 + gyroMotion * 0.12 + scrollMotion * 0.08})`
       ctx.shadowBlur = 55 + h * 25 + s1 * 8 + breath * 8
-      ctx.shadowOffsetX = 0
-      ctx.shadowOffsetY = 0
+      ctx.shadowOffsetX = ix * 0.15
+      ctx.shadowOffsetY = iy * 0.1
       ctx.fillStyle = 'rgba(0,0,0,0)'
       ctx.fillText(children, cx, cy)
       ctx.shadowColor = `rgba(30, 160, 255, ${0.2 + h * 0.15 + c1 * 0.05 + breath * 0.04})`
@@ -170,14 +177,14 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.restore()
 
       // ═══════════════════════════════════════════════════
-      // LAYER 1: Deep shadow with chromatic tint
+      // LAYER 1: Deep shadow
       // ═══════════════════════════════════════════════════
       ctx.save()
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.55)'
-      ctx.shadowBlur = 30
-      ctx.shadowOffsetX = 3.5 + s1 * 0.4
-      ctx.shadowOffsetY = 5 + c1 * 0.4
-      ctx.fillStyle = 'rgba(8, 4, 25, 0.2)'
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+      ctx.shadowBlur = 25
+      ctx.shadowOffsetX = 3 + s1 * 0.4 + ix * 0.05
+      ctx.shadowOffsetY = 4.5 + c1 * 0.4 + iy * 0.04
+      ctx.fillStyle = 'rgba(8, 4, 25, 0.18)'
       ctx.fillText(children, cx + 2, cy + 2)
       ctx.restore()
 
@@ -185,74 +192,102 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       // LAYER 1.5: Glass thickness edge
       // ═══════════════════════════════════════════════════
       ctx.save()
-      ctx.fillStyle = 'rgba(100, 80, 160, 0.12)'
+      ctx.fillStyle = 'rgba(100, 80, 160, 0.1)'
       ctx.fillText(children, cx + 1.5 + dx * 0.4, cy + 1.8 + dy * 0.4)
       ctx.restore()
 
       // ═══════════════════════════════════════════════════
-      // LAYER 2: Chromatic aberration
+      // LAYER 2: Chromatic aberration (behind glass)
+      // Strong color fringe visible through translucent glass
       // ═══════════════════════════════════════════════════
-      const caBase = 2.5 + h * 4.5 + gyroMotion * 2.5 + Math.abs(s1) * 1.2
-      const caAng = time * 0.25 + (inputX - 0.5) * 0.6
+      const caBase = 3 + h * 5 + gyroMotion * 4 + scrollMotion * 2.5 + Math.abs(s1) * 1.5
+      const caAng = time * 0.25 + (inputX - 0.5) * 0.8
 
       ctx.globalCompositeOperation = 'screen'
 
-      ctx.fillStyle = `rgba(255, 30, 70, ${0.28 + h * 0.18})`
+      // Red channel
+      ctx.fillStyle = `rgba(255, 30, 70, ${0.4 + h * 0.2 + gyroMotion * 0.1})`
       ctx.fillText(children,
-        cx + Math.cos(caAng) * caBase + ix * 0.25,
-        cy + Math.sin(caAng) * caBase * 0.45 + iy * 0.12
+        cx + Math.cos(caAng) * caBase + ix * 0.3,
+        cy + Math.sin(caAng) * caBase * 0.45 + iy * 0.15
       )
 
-      ctx.fillStyle = `rgba(30, 80, 255, ${0.28 + h * 0.18})`
+      // Blue channel
+      ctx.fillStyle = `rgba(30, 80, 255, ${0.4 + h * 0.2 + gyroMotion * 0.1})`
       ctx.fillText(children,
-        cx + Math.cos(caAng + Math.PI) * caBase - ix * 0.25,
-        cy + Math.sin(caAng + Math.PI) * caBase * 0.45 - iy * 0.12
+        cx + Math.cos(caAng + Math.PI) * caBase - ix * 0.3,
+        cy + Math.sin(caAng + Math.PI) * caBase * 0.45 - iy * 0.15
       )
 
-      ctx.fillStyle = `rgba(30, 255, 100, ${0.14 + h * 0.1})`
+      // Green channel
+      ctx.fillStyle = `rgba(30, 255, 100, ${0.2 + h * 0.12})`
       ctx.fillText(children,
-        cx + Math.cos(caAng + Math.PI * 0.5) * caBase * 0.35,
-        cy + Math.sin(caAng + Math.PI * 0.5) * caBase * 0.25
+        cx + Math.cos(caAng + Math.PI * 0.5) * caBase * 0.4,
+        cy + Math.sin(caAng + Math.PI * 0.5) * caBase * 0.3
       )
 
-      ctx.fillStyle = `rgba(0, 200, 255, ${0.12 + h * 0.1})`
+      // Cyan accent
+      ctx.fillStyle = `rgba(0, 200, 255, ${0.18 + h * 0.12})`
       ctx.fillText(children,
-        cx + Math.cos(caAng + Math.PI * 1.15) * caBase * 0.5,
-        cy + Math.sin(caAng + Math.PI * 1.15) * caBase * 0.3
+        cx + Math.cos(caAng + Math.PI * 1.15) * caBase * 0.55,
+        cy + Math.sin(caAng + Math.PI * 1.15) * caBase * 0.35
       )
 
       ctx.globalCompositeOperation = 'source-over'
 
       // ═══════════════════════════════════════════════════
-      // LAYER 3: Glass body — main text
+      // LAYER 3: Glass body — TRANSLUCENT
+      // Reduced opacity so chromatic aberration and layers
+      // beneath are visible through the glass
       // ═══════════════════════════════════════════════════
       const ga = time * 0.12
       const glassGrad = ctx.createLinearGradient(
         cx + Math.cos(ga) * 280, cy + Math.sin(ga) * 60,
         cx - Math.cos(ga) * 280, cy - Math.sin(ga) * 60
       )
-      glassGrad.addColorStop(0, 'rgba(255,255,255,0.97)')
-      glassGrad.addColorStop(0.18, 'rgba(238,242,255,0.94)')
-      glassGrad.addColorStop(0.35, 'rgba(255,255,255,0.97)')
-      glassGrad.addColorStop(0.5, 'rgba(242,238,255,0.93)')
-      glassGrad.addColorStop(0.65, 'rgba(255,255,255,0.97)')
-      glassGrad.addColorStop(0.82, 'rgba(238,245,255,0.94)')
-      glassGrad.addColorStop(1, 'rgba(255,255,255,0.97)')
+      glassGrad.addColorStop(0, 'rgba(255,255,255,0.62)')
+      glassGrad.addColorStop(0.18, 'rgba(238,242,255,0.55)')
+      glassGrad.addColorStop(0.35, 'rgba(255,255,255,0.62)')
+      glassGrad.addColorStop(0.5, 'rgba(242,238,255,0.52)')
+      glassGrad.addColorStop(0.65, 'rgba(255,255,255,0.62)')
+      glassGrad.addColorStop(0.82, 'rgba(238,245,255,0.55)')
+      glassGrad.addColorStop(1, 'rgba(255,255,255,0.62)')
 
       ctx.save()
-      ctx.shadowColor = `rgba(140,100,255,${0.45 + h * 0.25 + s1 * 0.06})`
+      ctx.shadowColor = `rgba(140,100,255,${0.4 + h * 0.25 + s1 * 0.06})`
       ctx.shadowBlur = 28 + h * 18 + s1 * 4
       ctx.fillStyle = glassGrad
       ctx.fillText(children, cx + dx, cy + dy)
       ctx.restore()
 
       // ═══════════════════════════════════════════════════
+      // LAYER 3.5: Chromatic fringe ON TOP of glass
+      // Subtle color edges visible on the glass surface
+      // ═══════════════════════════════════════════════════
+      ctx.globalCompositeOperation = 'screen'
+
+      const caTop = caBase * 0.6
+      ctx.fillStyle = `rgba(255, 50, 90, ${0.12 + h * 0.1 + gyroMotion * 0.06})`
+      ctx.fillText(children,
+        cx + Math.cos(caAng + 0.3) * caTop + ix * 0.15,
+        cy + Math.sin(caAng + 0.3) * caTop * 0.4 + iy * 0.08
+      )
+
+      ctx.fillStyle = `rgba(50, 100, 255, ${0.12 + h * 0.1 + gyroMotion * 0.06})`
+      ctx.fillText(children,
+        cx + Math.cos(caAng + Math.PI + 0.3) * caTop - ix * 0.15,
+        cy + Math.sin(caAng + Math.PI + 0.3) * caTop * 0.4 - iy * 0.08
+      )
+
+      ctx.globalCompositeOperation = 'source-over'
+
+      // ═══════════════════════════════════════════════════
       // LAYER 4: Caustic light patterns
       // ═══════════════════════════════════════════════════
       ctx.globalCompositeOperation = 'overlay'
 
-      const k1x = cx + Math.sin(time * 0.45) * 220 + ix * 1.8
-      const k1y = cy + Math.cos(time * 0.3) * 25 + iy * 0.7
+      const k1x = cx + Math.sin(time * 0.45) * 220 + ix * 2
+      const k1y = cy + Math.cos(time * 0.3) * 25 + iy * 0.8
       const k1 = ctx.createRadialGradient(k1x, k1y, 0, k1x, k1y, 140 + s2 * 15)
       k1.addColorStop(0, `rgba(255,255,255,${0.8 + s1 * 0.08})`)
       k1.addColorStop(0.15, `rgba(255,252,245,${0.45 + c1 * 0.06})`)
@@ -261,8 +296,8 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.fillStyle = k1
       ctx.fillText(children, cx + dx, cy + dy)
 
-      const k2x = cx + Math.cos(time * 0.38 + 2.2) * 190 - ix
-      const k2y = cy + Math.sin(time * 0.5 + 0.8) * 20 - iy * 0.4
+      const k2x = cx + Math.cos(time * 0.38 + 2.2) * 190 - ix * 1.2
+      const k2y = cy + Math.sin(time * 0.5 + 0.8) * 20 - iy * 0.5
       const k2 = ctx.createRadialGradient(k2x, k2y, 0, k2x, k2y, 100)
       k2.addColorStop(0, `rgba(220,240,255,${0.55 + c2 * 0.08})`)
       k2.addColorStop(0.3, 'rgba(220,240,255,0.15)')
@@ -270,7 +305,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.fillStyle = k2
       ctx.fillText(children, cx + dx, cy + dy)
 
-      const k3x = cx + Math.sin(time * 1.1 + 4) * 110 + ix * 0.4
+      const k3x = cx + Math.sin(time * 1.1 + 4) * 110 + ix * 0.5
       const k3y = cy + Math.cos(time * 1.4 + 1.5) * 12
       const k3 = ctx.createRadialGradient(k3x, k3y, 0, k3x, k3y, 55)
       k3.addColorStop(0, `rgba(255,255,255,${0.45 + s2 * 0.1})`)
@@ -308,8 +343,8 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       // ═══════════════════════════════════════════════════
       ctx.globalCompositeOperation = 'screen'
 
-      const p1x = cx + Math.sin(time * 0.65) * 130 + ix * 1.6
-      const p1y = cy - 3 + Math.cos(time * 0.45) * 7 + iy * 0.4
+      const p1x = cx + Math.sin(time * 0.65) * 130 + ix * 1.8
+      const p1y = cy - 3 + Math.cos(time * 0.45) * 7 + iy * 0.5
       const g1 = ctx.createRadialGradient(p1x, p1y, 0, p1x, p1y, 48 + h * 8)
       g1.addColorStop(0, `rgba(255,255,255,${0.92 + h * 0.08})`)
       g1.addColorStop(0.12, `rgba(255,255,255,${0.55 + h * 0.1})`)
@@ -318,7 +353,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.fillStyle = g1
       ctx.fillText(children, cx, cy)
 
-      const p2x = cx + Math.cos(time * 0.5 + 1.8) * 170 - ix * 0.7
+      const p2x = cx + Math.cos(time * 0.5 + 1.8) * 170 - ix * 0.8
       const p2y = cy + 2 + Math.sin(time * 0.6) * 5
       const g2 = ctx.createRadialGradient(p2x, p2y, 0, p2x, p2y, 32)
       g2.addColorStop(0, 'rgba(195,225,255,0.75)')
@@ -327,7 +362,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.fillStyle = g2
       ctx.fillText(children, cx, cy)
 
-      const p3x = cx + Math.sin(time * 1.05 + 3.2) * 90 + ix * 0.25
+      const p3x = cx + Math.sin(time * 1.05 + 3.2) * 90 + ix * 0.3
       const p3y = cy - 5 + Math.cos(time * 1.3) * 3
       const g3 = ctx.createRadialGradient(p3x, p3y, 0, p3x, p3y, 18)
       g3.addColorStop(0, 'rgba(255,255,255,1)')
@@ -358,7 +393,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
         cx - 320 + Math.sin(iP) * 120, cy - 15,
         cx + 320 + Math.sin(iP) * 120, cy + 15
       )
-      const iA = 0.1 + h * 0.18 + Math.abs(s2) * 0.04
+      const iA = 0.12 + h * 0.2 + Math.abs(s2) * 0.05 + gyroMotion * 0.08
       iG.addColorStop(0, `rgba(255,50,90,${iA})`)
       iG.addColorStop(0.17, `rgba(255,160,40,${iA * 0.75})`)
       iG.addColorStop(0.35, `rgba(40,255,110,${iA})`)
@@ -376,7 +411,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       // ═══════════════════════════════════════════════════
       ctx.globalCompositeOperation = 'soft-light'
 
-      const bY = cy + Math.sin(time * 0.55) * fontSize * 0.18 + iy * 0.25
+      const bY = cy + Math.sin(time * 0.55) * fontSize * 0.18 + iy * 0.3
       const bG = ctx.createLinearGradient(cx - 320, bY - 12, cx + 320, bY + 12)
       bG.addColorStop(0, 'rgba(255,200,150,0)')
       bG.addColorStop(0.25, `rgba(255,225,185,${0.25 + s1 * 0.08})`)
@@ -399,7 +434,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       const streakIntensity = 0.6 + Math.abs(Math.cos(time * 0.35)) * 0.4
 
       const sG = ctx.createLinearGradient(streakX - halfW, cy, streakX + halfW, cy)
-      const sA = (0.2 + h * 0.25) * streakIntensity
+      const sA = (0.22 + h * 0.25) * streakIntensity
       sG.addColorStop(0, 'rgba(255,255,255,0)')
       sG.addColorStop(0.3, `rgba(255,250,240,${sA * 0.3})`)
       sG.addColorStop(0.48, `rgba(255,255,255,${sA})`)
@@ -426,13 +461,10 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.globalCompositeOperation = 'source-over'
 
       // ═══════════════════════════════════════════════════
-      // EDGE FADE MASK — removes harsh canvas cutoff
-      // Uses destination-in compositing to smoothly fade
-      // all edges so the glow dissolves into the background
+      // EDGE FADE MASK
       // ═══════════════════════════════════════════════════
       ctx.globalCompositeOperation = 'destination-in'
 
-      // Horizontal fade (left + right edges)
       const hFade = ctx.createLinearGradient(0, 0, width, 0)
       hFade.addColorStop(0, 'rgba(0,0,0,0)')
       hFade.addColorStop(0.07, 'rgba(0,0,0,1)')
@@ -441,7 +473,6 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
       ctx.fillStyle = hFade
       ctx.fillRect(0, 0, width, height)
 
-      // Vertical fade (top + bottom edges)
       const vFade = ctx.createLinearGradient(0, 0, 0, height)
       vFade.addColorStop(0, 'rgba(0,0,0,0)')
       vFade.addColorStop(0.08, 'rgba(0,0,0,1)')
@@ -458,11 +489,13 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
     render()
 
     // ── Event handlers ───────────────────────────────────
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect()
+
+    // WINDOW-level mouse tracking — always active on desktop
+    // Effect responds to mouse anywhere on the page
+    const handleWindowMouseMove = (e: MouseEvent) => {
       mouseRef.current = {
-        x: (e.clientX - rect.left) / rect.width,
-        y: (e.clientY - rect.top) / rect.height
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight
       }
     }
 
@@ -480,11 +513,10 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
     const handleEnter = () => { isHoveringRef.current = true }
     const handleLeave = () => {
       isHoveringRef.current = false
-      mouseRef.current = { x: 0.5, y: 0.5 }
     }
     const handleTouchStart = () => {
       isHoveringRef.current = true
-      // Request iOS gyroscope permission on first touch gesture
+      // Request iOS gyroscope permission on first touch
       if (!gyroRequestedRef.current && typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
         gyroRequestedRef.current = true
         ;(DeviceOrientationEvent as any).requestPermission()
@@ -498,10 +530,9 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
     }
     const handleTouchEnd = () => {
       isHoveringRef.current = false
-      mouseRef.current = { x: 0.5, y: 0.5 }
     }
 
-    canvas.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', handleWindowMouseMove)
     canvas.addEventListener('mouseenter', handleEnter)
     canvas.addEventListener('mouseleave', handleLeave)
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
@@ -510,7 +541,7 @@ export default function WebGLDistortedText({ children, className = '' }: WebGLDi
 
     return () => {
       cancelAnimationFrame(animationRef.current)
-      canvas.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mousemove', handleWindowMouseMove)
       canvas.removeEventListener('mouseenter', handleEnter)
       canvas.removeEventListener('mouseleave', handleLeave)
       canvas.removeEventListener('touchmove', handleTouchMove)
