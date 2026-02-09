@@ -4,10 +4,14 @@ import { motion } from 'framer-motion'
 import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-// Dynamic import to prevent SSR issues with canvas
+// Dynamic imports to prevent SSR issues with canvas/WebGL
 const WebGLDistortedText = dynamic(() => import('./WebGLDistortedText'), {
   ssr: false,
   loading: () => <span className="text-white opacity-80">bends reality</span>
+})
+
+const ColorBends = dynamic(() => import('./ColorBends'), {
+  ssr: false
 })
 
 export default function Hero() {
@@ -20,6 +24,18 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5">
+      {/* ColorBends WebGL background */}
+      <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.45 }}>
+        <ColorBends
+          rotation={-180}
+          speed={0.47}
+          mouseInfluence={1.5}
+          parallax={1.1}
+          noise={0.51}
+          transparent={false}
+        />
+      </div>
+
       {/* Static orbs - using CSS animations for performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="orb orb-purple w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] -top-20 -left-20 sm:-top-40 sm:-left-40 animate-float-slow" />
