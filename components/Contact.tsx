@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Github, Twitter, Mail, ArrowUpRight } from 'lucide-react'
+import GlassSurface from './GlassSurface'
 
 const socialLinks = [
   {
@@ -38,10 +39,15 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="max-w-2xl mx-auto text-center"
         >
-          {/* Main content */}
-          <span className="inline-block px-3 py-1.5 mb-4 text-xs sm:text-sm font-medium text-cyan-400 rounded-full glass-subtle">
-            Get In Touch
-          </span>
+          {/* Badge */}
+          <GlassSurface
+            borderRadius={9999}
+            brightness={40}
+            className="inline-flex mb-4"
+            contentClassName="px-3 py-1.5"
+          >
+            <span className="text-xs sm:text-sm font-medium text-cyan-400">Get In Touch</span>
+          </GlassSurface>
 
           <h2 className="font-display text-display-md font-bold text-white mb-4 text-balance">
             Let&apos;s build something
@@ -54,36 +60,51 @@ export default function Contact() {
           </p>
 
           {/* Primary CTA */}
-          <motion.a
-            href="mailto:contact@distortion-labs.com"
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 btn-primary px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white rounded-xl sm:rounded-2xl mb-10 sm:mb-12"
+            className="mb-10 sm:mb-12"
           >
-            <Mail className="w-5 h-5" />
-            <span className="relative z-10">Send us an email</span>
-            <ArrowUpRight className="w-4 h-4 relative z-10" />
-          </motion.a>
+            <GlassSurface
+              as="a"
+              href="mailto:contact@distortion-labs.com"
+              borderRadius={16}
+              brightness={40}
+              className="inline-flex cursor-pointer hover:scale-105 transition-transform duration-300"
+              contentClassName="flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4"
+            >
+              <Mail className="w-5 h-5 text-white" />
+              <span className="text-sm sm:text-base font-medium text-white">Send us an email</span>
+              <ArrowUpRight className="w-4 h-4 text-white" />
+            </GlassSurface>
+          </motion.div>
 
           {/* Social links */}
           <div className="flex items-center justify-center gap-4">
             {socialLinks.map((link, index) => (
-              <motion.a
+              <motion.div
                 key={link.name}
-                href={link.href}
-                target={link.name !== 'Email' ? '_blank' : undefined}
-                rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 + index * 0.1 }}
-                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl glass-card flex items-center justify-center text-white/50 ${link.color} transition-colors duration-300`}
-                aria-label={link.name}
               >
-                <link.icon className="w-5 h-5 sm:w-6 sm:h-6" />
-              </motion.a>
+                <GlassSurface
+                  as="a"
+                  href={link.href}
+                  target={link.name !== 'Email' ? '_blank' : undefined}
+                  rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
+                  borderRadius={16}
+                  brightness={35}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 text-white/50 ${link.color} transition-colors duration-300`}
+                  contentClassName="flex items-center justify-center"
+                  aria-label={link.name}
+                >
+                  <link.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                </GlassSurface>
+              </motion.div>
             ))}
           </div>
 
