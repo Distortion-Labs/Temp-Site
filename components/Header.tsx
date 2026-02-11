@@ -119,14 +119,9 @@ export default function Header() {
             </div>
 
             {/* Mobile Menu Button */}
-            <GlassSurface
-              as="button"
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              borderRadius={12}
-              backgroundOpacity={0.08}
-              saturation={1.2}
-              brightness={50}
-              className="md:hidden w-10 h-10 text-white z-10 cursor-pointer"
+              className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl glass text-white z-10"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
             >
@@ -153,7 +148,7 @@ export default function Header() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </GlassSurface>
+            </button>
           </nav>
         </div>
       </div>
