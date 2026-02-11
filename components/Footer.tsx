@@ -25,7 +25,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative py-12 sm:py-16 safe-bottom">
+    <footer className="relative py-12 sm:py-16 safe-bottom bg-transparent">
       <div className="container-main">
         {/* Main footer content */}
         <div className="flex flex-col items-center text-center">

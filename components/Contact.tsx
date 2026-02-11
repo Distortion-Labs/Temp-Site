@@ -1,34 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Github, Twitter, Mail, ArrowUpRight } from 'lucide-react'
-
-const socialLinks = [
-  {
-    name: 'GitHub',
-    href: 'https://github.com/Distortion-Labs',
-    icon: Github,
-    color: 'hover:text-white',
-  },
-  {
-    name: 'Twitter',
-    href: 'https://twitter.com',
-    icon: Twitter,
-    color: 'hover:text-cyan-400',
-  },
-  {
-    name: 'Email',
-    href: 'mailto:contact@distortion-labs.com',
-    icon: Mail,
-    color: 'hover:text-primary-400',
-  },
-]
+import { Mail, ArrowUpRight } from 'lucide-react'
 
 export default function Contact() {
   return (
     <section id="contact" className="section-space relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-950/20 to-void pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-950/10 to-transparent pointer-events-none" />
 
       <div className="container-main relative">
         <motion.div
@@ -67,33 +46,13 @@ export default function Contact() {
             <ArrowUpRight className="w-4 h-4 relative z-10" />
           </motion.a>
 
-          {/* Social links */}
-          <div className="flex items-center justify-center gap-4">
-            {socialLinks.map((link, index) => (
-              <motion.a
-                key={link.name}
-                href={link.href}
-                target={link.name !== 'Email' ? '_blank' : undefined}
-                rel={link.name !== 'Email' ? 'noopener noreferrer' : undefined}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl glass-card flex items-center justify-center text-white/50 ${link.color} transition-colors duration-300`}
-                aria-label={link.name}
-              >
-                <link.icon className="w-5 h-5 sm:w-6 sm:h-6" />
-              </motion.a>
-            ))}
-          </div>
-
           {/* Subtle message */}
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            className="mt-10 sm:mt-12 text-xs sm:text-sm text-white/30"
+            transition={{ delay: 0.4 }}
+            className="text-xs sm:text-sm text-white/30"
           >
             We typically respond within 24-48 hours
           </motion.p>
