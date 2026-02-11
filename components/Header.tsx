@@ -54,22 +54,22 @@ export default function Header() {
       <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
         <div className="container-main">
           <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500">
-            {/* Liquid glass backdrop - always mounted, fades with scroll */}
-            <GlassSurface
-              borderRadius={16}
-              backgroundOpacity={0.05}
-              saturation={1.5}
-              brightness={45}
-              blur={8}
-              style={{
-                position: 'absolute',
-                inset: '0',
-                zIndex: 0,
-                opacity: isScrolled ? 1 : 0,
-                transition: 'opacity 0.5s ease',
-                pointerEvents: 'none'
-              }}
-            />
+            {/* Liquid glass backdrop - only mounted when scrolled */}
+            {isScrolled && (
+              <GlassSurface
+                borderRadius={16}
+                backgroundOpacity={0.05}
+                saturation={1.5}
+                brightness={45}
+                blur={8}
+                style={{
+                  position: 'absolute',
+                  inset: '0',
+                  zIndex: 0,
+                  pointerEvents: 'none'
+                }}
+              />
+            )}
 
             {/* Logo */}
             <Link

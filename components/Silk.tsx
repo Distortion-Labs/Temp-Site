@@ -2,7 +2,7 @@
 
 /* eslint-disable react/no-unknown-property */
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, useRef, useMemo, useLayoutEffect } from 'react'
+import { forwardRef, useRef, useMemo, useLayoutEffect, useState, useEffect } from 'react'
 import { Color } from 'three'
 import type { Mesh } from 'three'
 
@@ -119,6 +119,19 @@ export default function Silk({
   rotation = 0
 }: SilkProps) {
   const meshRef = useRef<Mesh>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   const uniforms = useMemo(
     () => ({
@@ -133,8 +146,12 @@ export default function Silk({
   )
 
   return (
-    <Canvas dpr={[1, 2]} frameloop="always">
-      <SilkPlane ref={meshRef} uniforms={uniforms} />
-    </Canvas>
+    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      {isVisible && (
+        <Canvas dpr={[1, 1.5]} frameloop="always">
+          <SilkPlane ref={meshRef} uniforms={uniforms} />
+        </Canvas>
+      )}
+    </div>
   )
 }

@@ -138,6 +138,7 @@ export default function ColorBends({
   const pointerTargetRef = useRef(new THREE.Vector2(0, 0))
   const pointerCurrentRef = useRef(new THREE.Vector2(0, 0))
   const pointerSmoothRef = useRef(8)
+  const isVisibleRef = useRef(true)
 
   useEffect(() => {
     const container = containerRef.current
@@ -182,7 +183,7 @@ export default function ColorBends({
     })
     rendererRef.current = renderer
     renderer.outputColorSpace = THREE.SRGBColorSpace
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setClearColor(0x000000, transparent ? 0 : 1)
     renderer.domElement.style.width = '100%'
     renderer.domElement.style.height = '100%'
@@ -210,6 +211,9 @@ export default function ColorBends({
     }
 
     const loop = () => {
+      rafRef.current = requestAnimationFrame(loop)
+      if (!isVisibleRef.current) return
+
       const dt = clock.getDelta()
       const elapsed = clock.elapsedTime
       material.uniforms.uTime.value = elapsed
@@ -226,12 +230,18 @@ export default function ColorBends({
       cur.lerp(tgt, amt)
       material.uniforms.uPointer.value.copy(cur)
       renderer.render(scene, camera)
-      rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
 
+    const visObserver = new IntersectionObserver(
+      ([entry]) => { isVisibleRef.current = entry.isIntersecting },
+      { threshold: 0 }
+    )
+    visObserver.observe(container)
+
     return () => {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
+      visObserver.disconnect()
       if (resizeObserverRef.current) resizeObserverRef.current.disconnect()
       else window.removeEventListener('resize', handleResize)
       geometry.dispose()
