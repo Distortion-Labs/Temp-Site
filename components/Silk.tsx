@@ -2,7 +2,7 @@
 
 /* eslint-disable react/no-unknown-property */
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, useRef, useMemo, useLayoutEffect, useState, useEffect } from 'react'
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, MutableRefObject } from 'react'
 import { Color } from 'three'
 import type { Mesh } from 'three'
 
@@ -74,9 +74,10 @@ void main() {
 
 interface SilkPlaneProps {
   uniforms: Record<string, { value: unknown }>
+  visibleRef: MutableRefObject<boolean>
 }
 
-const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane({ uniforms }, ref) {
+const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane({ uniforms, visibleRef }, ref) {
   const { viewport } = useThree()
 
   useLayoutEffect(() => {
@@ -85,7 +86,12 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane({ uniforms
     }
   }, [ref, viewport])
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
+    if (!visibleRef.current) {
+      // Still keep the loop alive but skip GPU work
+      state.gl.clear()
+      return
+    }
     if (ref && 'current' in ref && ref.current) {
       const mat = ref.current.material as THREE.ShaderMaterial
       mat.uniforms.uTime.value += 0.1 * delta
@@ -120,14 +126,14 @@ export default function Silk({
 }: SilkProps) {
   const meshRef = useRef<Mesh>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const visibleRef = useRef(true)
 
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
     const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0 }
+      ([entry]) => { visibleRef.current = entry.isIntersecting },
+      { threshold: 0, rootMargin: '200px 0px' }
     )
     observer.observe(el)
     return () => observer.disconnect()
@@ -147,11 +153,9 @@ export default function Silk({
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      {isVisible && (
-        <Canvas dpr={[1, 1.5]} frameloop="always">
-          <SilkPlane ref={meshRef} uniforms={uniforms} />
-        </Canvas>
-      )}
+      <Canvas dpr={[1, 1.5]} frameloop="always">
+        <SilkPlane ref={meshRef} uniforms={uniforms} visibleRef={visibleRef} />
+      </Canvas>
     </div>
   )
 }
