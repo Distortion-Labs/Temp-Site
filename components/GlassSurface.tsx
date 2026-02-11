@@ -30,6 +30,7 @@ interface GlassSurfaceProps {
   target?: string
   rel?: string
   'aria-label'?: string
+  'aria-expanded'?: boolean
 }
 
 export default function GlassSurface({
@@ -57,7 +58,8 @@ export default function GlassSurface({
   href,
   target,
   rel,
-  'aria-label': ariaLabel
+  'aria-label': ariaLabel,
+  'aria-expanded': ariaExpanded
 }: GlassSurfaceProps) {
   const uniqueId = useId().replace(/:/g, '-')
   const filterId = `glass-filter-${uniqueId}`
@@ -167,6 +169,7 @@ export default function GlassSurface({
       target={target}
       rel={rel}
       aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
     >
       <svg className="glass-surface__filter" xmlns="http://www.w3.org/2000/svg">
         <defs>
