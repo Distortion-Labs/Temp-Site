@@ -138,7 +138,6 @@ export default function ColorBends({
   const pointerTargetRef = useRef(new THREE.Vector2(0, 0))
   const pointerCurrentRef = useRef(new THREE.Vector2(0, 0))
   const pointerSmoothRef = useRef(8)
-  const isVisibleRef = useRef(true)
 
   useEffect(() => {
     const container = containerRef.current
@@ -211,9 +210,6 @@ export default function ColorBends({
     }
 
     const loop = () => {
-      rafRef.current = requestAnimationFrame(loop)
-      if (!isVisibleRef.current) return
-
       const dt = clock.getDelta()
       const elapsed = clock.elapsedTime
       material.uniforms.uTime.value = elapsed
@@ -230,18 +226,12 @@ export default function ColorBends({
       cur.lerp(tgt, amt)
       material.uniforms.uPointer.value.copy(cur)
       renderer.render(scene, camera)
+      rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
 
-    const visObserver = new IntersectionObserver(
-      ([entry]) => { isVisibleRef.current = entry.isIntersecting },
-      { threshold: 0, rootMargin: '200px 0px' }
-    )
-    visObserver.observe(container)
-
     return () => {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
-      visObserver.disconnect()
       if (resizeObserverRef.current) resizeObserverRef.current.disconnect()
       else window.removeEventListener('resize', handleResize)
       geometry.dispose()
