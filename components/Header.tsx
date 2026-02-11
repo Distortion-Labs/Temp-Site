@@ -53,172 +53,103 @@ export default function Header() {
     >
       <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
         <div className="container-main">
-          {isScrolled ? (
+          <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500">
+            {/* Liquid glass backdrop - always mounted, fades with scroll */}
             <GlassSurface
               borderRadius={16}
-              backgroundOpacity={0.6}
-              saturation={1.8}
-              brightness={30}
-              className="transition-all duration-500"
-              contentClassName="flex items-center justify-between px-4 sm:px-6 py-3"
+              backgroundOpacity={0.05}
+              saturation={1.5}
+              brightness={45}
+              blur={8}
+              style={{
+                position: 'absolute',
+                inset: '0',
+                zIndex: 0,
+                opacity: isScrolled ? 1 : 0,
+                transition: 'opacity 0.5s ease',
+                pointerEvents: 'none'
+              }}
+            />
+
+            {/* Logo */}
+            <Link
+              href="/"
+              onClick={(e) => {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              className="flex items-center gap-2.5 sm:gap-3 group relative z-10"
             >
-              {/* Logo */}
-              <Link
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault()
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-                className="flex items-center gap-2.5 sm:gap-3 group z-10"
-              >
-                <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-cyan-500 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-glow-purple">
-                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
-                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <span className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight">
-                  Distortion<span className="text-primary-400">Labs</span>
-                </span>
-              </Link>
-
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-1">
-                {navLinks.map((link) => (
-                  <button
-                    key={link.name}
-                    onClick={() => scrollToSection(link.href)}
-                    className="relative px-4 lg:px-5 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors duration-300 group"
-                  >
-                    {link.name}
-                    <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full group-hover:w-2/3 transition-all duration-300" />
-                  </button>
-                ))}
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-cyan-500 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-glow-purple">
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
+              <span className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight">
+                Distortion<span className="text-primary-400">Labs</span>
+              </span>
+            </Link>
 
-              {/* Desktop CTA */}
-              <div className="hidden md:block">
-                <GlassSurface
-                  borderRadius={12}
-                  brightness={40}
-                  className="cursor-pointer hover:scale-105 transition-transform duration-300"
-                  contentClassName="flex items-center justify-center px-5 lg:px-6 py-2.5"
-                  onClick={() => scrollToSection('#products')}
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-1 relative z-10">
+              {navLinks.map((link) => (
+                <button
+                  key={link.name}
+                  onClick={() => scrollToSection(link.href)}
+                  className="relative px-4 lg:px-5 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors duration-300 group"
                 >
-                  <span className="text-sm font-medium text-white">View Products</span>
-                </GlassSurface>
-              </div>
+                  {link.name}
+                  <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full group-hover:w-2/3 transition-all duration-300" />
+                </button>
+              ))}
+            </div>
 
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl text-white z-10"
-                aria-label="Toggle menu"
-                aria-expanded={isMobileMenuOpen}
+            {/* Desktop CTA */}
+            <div className="hidden md:block relative z-10">
+              <GlassSurface
+                as="button"
+                onClick={() => scrollToSection('#products')}
+                borderRadius={12}
+                backgroundOpacity={0.1}
+                saturation={1.2}
+                brightness={55}
+                className="px-5 lg:px-6 py-2.5 text-sm font-medium text-white cursor-pointer hover:scale-105 transition-transform duration-300"
               >
-                <AnimatePresence mode="wait">
-                  {isMobileMenuOpen ? (
-                    <motion.div
-                      key="close"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <X className="w-5 h-5" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="menu"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Menu className="w-5 h-5" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </button>
-            </GlassSurface>
-          ) : (
-            <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500">
-              {/* Logo */}
-              <Link
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault()
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-                className="flex items-center gap-2.5 sm:gap-3 group z-10"
-              >
-                <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-cyan-500 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-glow-purple">
-                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
-                  <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-                <span className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight">
-                  Distortion<span className="text-primary-400">Labs</span>
-                </span>
-              </Link>
+                <span className="relative z-10">View Products</span>
+              </GlassSurface>
+            </div>
 
-              {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center gap-1">
-                {navLinks.map((link) => (
-                  <button
-                    key={link.name}
-                    onClick={() => scrollToSection(link.href)}
-                    className="relative px-4 lg:px-5 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors duration-300 group"
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl glass text-white z-10"
+              aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              <AnimatePresence mode="wait">
+                {isMobileMenuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {link.name}
-                    <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full group-hover:w-2/3 transition-all duration-300" />
-                  </button>
-                ))}
-              </div>
-
-              {/* Desktop CTA */}
-              <div className="hidden md:block">
-                <GlassSurface
-                  borderRadius={12}
-                  brightness={40}
-                  className="cursor-pointer hover:scale-105 transition-transform duration-300"
-                  contentClassName="flex items-center justify-center px-5 lg:px-6 py-2.5"
-                  onClick={() => scrollToSection('#products')}
-                >
-                  <span className="text-sm font-medium text-white">View Products</span>
-                </GlassSurface>
-              </div>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl glass text-white z-10"
-                aria-label="Toggle menu"
-                aria-expanded={isMobileMenuOpen}
-              >
-                <AnimatePresence mode="wait">
-                  {isMobileMenuOpen ? (
-                    <motion.div
-                      key="close"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <X className="w-5 h-5" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="menu"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Menu className="w-5 h-5" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </button>
-            </nav>
-          )}
+                    <X className="w-5 h-5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu className="w-5 h-5" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </button>
+          </nav>
         </div>
       </div>
 
@@ -246,10 +177,10 @@ export default function Header() {
             >
               <GlassSurface
                 borderRadius={16}
-                backgroundOpacity={0.5}
-                brightness={25}
-                saturation={1.5}
-                contentClassName="p-2 mt-2"
+                backgroundOpacity={0.08}
+                saturation={1.3}
+                brightness={40}
+                className="p-2 mt-2"
               >
                 {navLinks.map((link, index) => (
                   <motion.button
@@ -270,13 +201,14 @@ export default function Header() {
                   className="p-2 pt-0"
                 >
                   <GlassSurface
-                    borderRadius={12}
-                    brightness={40}
-                    className="w-full cursor-pointer"
-                    contentClassName="flex items-center justify-center px-4 py-4"
+                    as="button"
                     onClick={() => scrollToSection('#products')}
+                    borderRadius={12}
+                    backgroundOpacity={0.15}
+                    saturation={1.2}
+                    className="w-full px-4 py-4 text-center text-base font-medium text-white cursor-pointer"
                   >
-                    <span className="text-base font-medium text-white">View Products</span>
+                    <span className="relative z-10">View Products</span>
                   </GlassSurface>
                 </motion.div>
               </GlassSurface>
