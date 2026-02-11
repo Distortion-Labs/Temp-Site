@@ -2,6 +2,7 @@
 
 import { Zap, Github, Twitter } from 'lucide-react'
 import Link from 'next/link'
+import GlassSurface from './GlassSurface'
 
 const navLinks = [
   { name: 'Products', href: '#products' },
@@ -27,7 +28,6 @@ export default function Footer() {
   return (
     <footer className="relative py-12 sm:py-16 safe-bottom">
       <div className="container-main">
-        {/* Main footer content */}
         <div className="flex flex-col items-center text-center">
           {/* Logo */}
           <Link
@@ -62,16 +62,20 @@ export default function Footer() {
           {/* Social links */}
           <div className="flex items-center gap-3 mb-8">
             {socialLinks.map((social) => (
-              <a
+              <GlassSurface
                 key={social.name}
+                as="a"
                 href={social.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-xl glass-subtle flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300"
+                borderRadius={12}
+                brightness={35}
+                className="w-10 h-10 text-white/40 hover:text-white transition-all duration-300"
+                contentClassName="flex items-center justify-center"
                 aria-label={social.name}
               >
                 <social.icon className="w-5 h-5" />
-              </a>
+              </GlassSurface>
             ))}
           </div>
 
