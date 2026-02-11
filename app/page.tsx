@@ -11,11 +11,12 @@ export default function Home() {
     <main className="relative">
       <Header />
       <Hero />
-      <SilkSection />
-      <Products />
-      <About />
-      <Contact />
-      <Footer />
+      <SilkSection>
+        <Products />
+        <About />
+        <Contact />
+        <Footer />
+      </SilkSection>
     </main>
   )
 }
