@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
 import dynamic from 'next/dynamic'
-import GlassSurface from './GlassSurface'
 
 // Dynamic imports to prevent SSR issues with canvas/WebGL
 const ChromaticText = dynamic(() => import('./ChromaticText'), {
@@ -46,36 +45,21 @@ export default function Hero() {
 
       {/* Floating glass elements - desktop only */}
       <div className="absolute top-[20%] left-[8%] hidden lg:block animate-fade-in-delay">
-        <GlassSurface
-          borderRadius={16}
-          brightness={45}
-          className="w-16 h-16 animate-float"
-          contentClassName="flex items-center justify-center"
-        >
+        <div className="w-16 h-16 glass-card rounded-2xl flex items-center justify-center animate-float">
           <Chrome className="w-7 h-7 text-cyan-400" />
-        </GlassSurface>
+        </div>
       </div>
 
       <div className="absolute bottom-[25%] right-[10%] hidden lg:block animate-fade-in-delay-2">
-        <GlassSurface
-          borderRadius={12}
-          brightness={45}
-          className="w-14 h-14 animate-float-alt"
-          contentClassName="flex items-center justify-center"
-        >
+        <div className="w-14 h-14 glass-card rounded-xl flex items-center justify-center animate-float-alt">
           <Sparkles className="w-6 h-6 text-primary-400" />
-        </GlassSurface>
+        </div>
       </div>
 
       {/* Main content - fast load with minimal delays */}
       <div className="relative z-10 max-w-4xl mx-auto text-center pt-20 sm:pt-24 animate-fade-in-up">
         {/* Badge */}
-        <GlassSurface
-          borderRadius={9999}
-          brightness={40}
-          className="inline-flex mb-6 sm:mb-8"
-          contentClassName="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2"
-        >
+        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 mb-6 sm:mb-8 rounded-full glass-subtle">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500" />
@@ -83,9 +67,9 @@ export default function Hero() {
           <span className="text-xs sm:text-sm font-medium text-white/70">
             Now shipping Multi-Finder Pro
           </span>
-        </GlassSurface>
+        </div>
 
-        {/* Main heading */}
+        {/* Main heading with canvas distortion effect */}
         <h1 className="font-display text-display-xl font-bold tracking-tight mb-4 sm:mb-6">
           <span className="text-white">Software that</span>
           <br />
@@ -100,27 +84,22 @@ export default function Hero() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-          <GlassSurface
-            borderRadius={16}
-            brightness={40}
-            className="w-full sm:w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
-            contentClassName="flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4"
+          <button
             onClick={() => scrollToSection('#products')}
+            className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white rounded-xl sm:rounded-2xl"
           >
-            <Chrome className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            <span className="text-sm sm:text-base font-medium text-white">See Our Extensions</span>
-          </GlassSurface>
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              <Chrome className="w-4 h-4 sm:w-5 sm:h-5" />
+              See Our Extensions
+            </span>
+          </button>
 
-          <GlassSurface
-            borderRadius={16}
-            brightness={30}
-            opacity={0.7}
-            className="w-full sm:w-auto cursor-pointer hover:scale-105 transition-transform duration-300"
-            contentClassName="flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4"
+          <button
             onClick={() => scrollToSection('#about')}
+            className="w-full sm:w-auto btn-glass px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white/80 rounded-xl sm:rounded-2xl"
           >
-            <span className="text-sm sm:text-base font-medium text-white/80">Learn More</span>
-          </GlassSurface>
+            Learn More
+          </button>
         </div>
 
         {/* Tech stack hint */}
