@@ -235,7 +235,7 @@ export default function ColorBends({
 
     const visObserver = new IntersectionObserver(
       ([entry]) => { isVisibleRef.current = entry.isIntersecting },
-      { threshold: 0 }
+      { threshold: 0, rootMargin: '200px 0px' }
     )
     visObserver.observe(container)
 
