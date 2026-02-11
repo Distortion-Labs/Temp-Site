@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { Mail, ArrowUpRight } from 'lucide-react'
-import GlassSurface from './GlassSurface'
 
 export default function Contact() {
   return (
@@ -31,28 +30,18 @@ export default function Contact() {
           </p>
 
           {/* Primary CTA */}
-          <motion.div
+          <motion.a
+            href="mailto:contact@distortion-labs.com"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="inline-block mb-10 sm:mb-12"
+            className="inline-flex items-center gap-2 btn-primary px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white rounded-xl sm:rounded-2xl mb-10 sm:mb-12"
           >
-            <GlassSurface
-              as="a"
-              href="mailto:contact@distortion-labs.com"
-              borderRadius={16}
-              backgroundOpacity={0.06}
-              saturation={1.4}
-              brightness={48}
-              blur={10}
-              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white cursor-pointer hover:scale-105 transition-transform duration-300"
-            >
-              <Mail className="w-5 h-5 relative z-10" />
-              <span className="relative z-10">Send us an email</span>
-              <ArrowUpRight className="w-4 h-4 relative z-10" />
-            </GlassSurface>
-          </motion.div>
+            <Mail className="w-5 h-5" />
+            <span className="relative z-10">Send us an email</span>
+            <ArrowUpRight className="w-4 h-4 relative z-10" />
+          </motion.a>
 
           {/* Subtle message */}
           <motion.p
