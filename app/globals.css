@@ -415,3 +415,54 @@
     animation-play-state: paused;
   }
 }
+
+/* ===== CHROMATIC ABERRATION TEXT ===== */
+.chromatic-text-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.chromatic-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font: inherit;
+  white-space: nowrap;
+}
+
+.chromatic-red {
+  color: rgba(255, 40, 80, 0.55);
+  mix-blend-mode: screen;
+}
+
+.chromatic-blue {
+  color: rgba(40, 80, 255, 0.55);
+  mix-blend-mode: screen;
+}
+
+.chromatic-main {
+  position: relative;
+  color: rgba(255, 255, 255, 0.92);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-shadow:
+    0 0 30px rgba(168, 85, 247, 0.3),
+    0 0 60px rgba(30, 160, 255, 0.15);
+}
+
+.chromatic-text-wrapper:hover .chromatic-red {
+  color: rgba(255, 40, 80, 0.7);
+}
+
+.chromatic-text-wrapper:hover .chromatic-blue {
+  color: rgba(40, 80, 255, 0.7);
+}
+
+.chromatic-text-wrapper:hover .chromatic-main {
+  text-shadow:
+    0 0 40px rgba(168, 85, 247, 0.5),
+    0 0 80px rgba(30, 160, 255, 0.25);
+}
