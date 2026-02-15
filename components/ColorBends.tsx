@@ -111,13 +111,12 @@ function hexToVec3(hex: string): THREE.Vector3 {
 
 interface ColorBendsPlaneProps {
   uniforms: Record<string, { value: unknown }>
-  visibleRef: MutableRefObject<boolean>
   pointerRef: MutableRefObject<{ x: number; y: number; targetX: number; targetY: number }>
   mouseInfluenceRef: MutableRefObject<{ value: number }>
 }
 
 const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function ColorBendsPlane(
-  { uniforms, visibleRef, pointerRef, mouseInfluenceRef },
+  { uniforms, pointerRef, mouseInfluenceRef },
   ref
 ) {
   const { viewport, size } = useThree()
@@ -138,9 +137,6 @@ const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function Co
   }, [ref, size])
 
   useFrame((state, delta) => {
-    if (!visibleRef.current) {
-      return
-    }
     if (ref && 'current' in ref && ref.current) {
       const mat = ref.current.material as THREE.ShaderMaterial
       mat.uniforms.uTime.value += delta
@@ -196,23 +192,8 @@ export default function ColorBends({
 }: ColorBendsProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const visibleRef = useRef(true)
   const pointerRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 })
   const mouseInfluenceRef = useRef({ value: mouseInfluence })
-
-  // IntersectionObserver for visibility-based optimization
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visibleRef.current = entry.isIntersecting
-      },
-      { threshold: 0, rootMargin: '200px 0px' }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
 
   // Pointer events with GSAP reset
   useEffect(() => {
@@ -287,11 +268,10 @@ export default function ColorBends({
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <Canvas dpr={[1, 1.5]} frameloop="always" gl={{ antialias: false, powerPreference: 'high-performance' }}>
+      <Canvas dpr={[1, 1.5]} frameloop="always">
         <ColorBendsPlane
           ref={meshRef}
           uniforms={uniforms}
-          visibleRef={visibleRef}
           pointerRef={pointerRef}
           mouseInfluenceRef={mouseInfluenceRef}
         />
