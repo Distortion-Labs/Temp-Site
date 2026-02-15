@@ -10,13 +10,8 @@ const ChromaticText = dynamic(() => import('./ChromaticText'), {
   loading: () => <span className="text-white opacity-80">bends reality</span>
 })
 
-const BulgeDistortion = dynamic(() => import('./BulgeDistortion'), {
-  ssr: false,
-  loading: () => (
-    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5 bg-[#0a0a1e]">
-      <div className="relative" style={{ zIndex: 1 }} />
-    </section>
-  )
+const ColorBends = dynamic(() => import('./ColorBends'), {
+  ssr: false
 })
 
 export default function Hero() {
@@ -28,7 +23,20 @@ export default function Hero() {
   }
 
   return (
-    <BulgeDistortion className="min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5">
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5">
+      {/* ColorBends WebGL background - using R3F Canvas for stable mobile rendering */}
+      <div className="absolute inset-0">
+        <ColorBends
+          rotation={-180}
+          speed={0.47}
+          mouseInfluence={1.5}
+          parallax={1.1}
+          noise={0.51}
+          colors={['#6b21a8', '#0ea5e9', '#e11d48', '#1e1b4b']}
+          transparent={false}
+        />
+      </div>
+
       {/* Floating glass elements - desktop only */}
       <div className="absolute top-[20%] left-[8%] hidden lg:block animate-fade-in-delay">
         <div className="w-16 h-16 glass-card rounded-2xl flex items-center justify-center animate-float">
@@ -117,6 +125,6 @@ export default function Hero() {
           <ArrowDown className="w-4 h-4" />
         </button>
       </motion.div>
-    </BulgeDistortion>
+    </section>
   )
 }
