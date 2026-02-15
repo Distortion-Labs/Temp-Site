@@ -5,7 +5,7 @@ import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // Dynamic imports to prevent SSR issues with canvas/WebGL
-const WebGLDistortedText = dynamic(() => import('./WebGLDistortedText'), {
+const ChromaticText = dynamic(() => import('./ChromaticText'), {
   ssr: false,
   loading: () => <span className="text-white opacity-80">bends reality</span>
 })
@@ -59,7 +59,7 @@ export default function Hero() {
         <h1 className="font-display text-display-xl font-bold tracking-tight mb-4 sm:mb-6">
           <span className="text-white">Software that</span>
           <br />
-          <WebGLDistortedText>bends reality</WebGLDistortedText>
+          <ChromaticText>bends reality</ChromaticText>
         </h1>
 
         {/* Subheading */}

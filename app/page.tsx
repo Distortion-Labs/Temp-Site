@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
+import SilkSection from '@/components/SilkSection'
 import Products from '@/components/Products'
 import About from '@/components/About'
 import Contact from '@/components/Contact'
@@ -10,10 +11,12 @@ export default function Home() {
     <main className="relative">
       <Header />
       <Hero />
-      <Products />
-      <About />
-      <Contact />
-      <Footer />
+      <SilkSection>
+        <Products />
+        <About />
+        <Contact />
+        <Footer />
+      </SilkSection>
     </main>
   )
 }

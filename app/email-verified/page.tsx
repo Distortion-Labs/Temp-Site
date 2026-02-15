@@ -2,25 +2,37 @@
 
 import { CheckCircle, ArrowRight, Zap } from 'lucide-react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import GlassSurface from '@/components/GlassSurface'
+
+const Silk = dynamic(() => import('@/components/Silk'), { ssr: false })
 
 export default function EmailVerified() {
   return (
     <main className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden px-5">
-      {/* Static orbs - CSS animations for performance */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="orb w-[250px] h-[250px] sm:w-[400px] sm:h-[400px] -top-20 -left-20 bg-emerald-500/30 animate-float-slow" />
-        <div className="orb orb-purple w-[200px] h-[200px] sm:w-[400px] sm:h-[400px] -bottom-20 -right-20 animate-float-slower" />
+      {/* Silk background */}
+      <div className="absolute inset-0 z-0">
+        <Silk
+          speed={10.5}
+          scale={0.7}
+          color="#4f2b6e"
+          noiseIntensity={2.6}
+          rotation={3.3}
+        />
       </div>
 
       {/* Main content */}
       <div className="container-main relative z-10">
         <div className="max-w-md mx-auto animate-fade-in-up">
           {/* Glass card */}
-          <div className="relative p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl glass-card overflow-hidden text-center">
-            {/* Gradient accents */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 orb bg-emerald-500/20" />
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 orb orb-purple opacity-20" />
-
+          <GlassSurface
+            borderRadius={24}
+            backgroundOpacity={0.06}
+            saturation={1.4}
+            brightness={48}
+            blur={10}
+            className="p-6 sm:p-8 md:p-10 text-center"
+          >
             {/* Success icon */}
             <div className="relative inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 mb-5 sm:mb-6 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600">
               <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
@@ -62,7 +74,7 @@ export default function EmailVerified() {
                 </a>
               </p>
             </div>
-          </div>
+          </GlassSurface>
 
           {/* Brand link */}
           <div className="mt-6 text-center animate-fade-in-delay">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Zap } from 'lucide-react'
 import Link from 'next/link'
+import GlassSurface from './GlassSurface'
 
 const navLinks = [
   { name: 'Products', href: '#products' },
@@ -52,11 +53,24 @@ export default function Header() {
     >
       <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
         <div className="container-main">
-          <nav
-            className={`relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500 ${
-              isScrolled ? 'glass-frosted' : ''
-            }`}
-          >
+          <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500">
+            {/* Liquid glass backdrop - only mounted when scrolled */}
+            {isScrolled && (
+              <GlassSurface
+                borderRadius={16}
+                backgroundOpacity={0.05}
+                saturation={1.5}
+                brightness={45}
+                blur={8}
+                style={{
+                  position: 'absolute',
+                  inset: '0',
+                  zIndex: 0,
+                  pointerEvents: 'none'
+                }}
+              />
+            )}
+
             {/* Logo */}
             <Link
               href="/"
@@ -64,7 +78,7 @@ export default function Header() {
                 e.preventDefault()
                 window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
-              className="flex items-center gap-2.5 sm:gap-3 group z-10"
+              className="flex items-center gap-2.5 sm:gap-3 group relative z-10"
             >
               <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-cyan-500 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-glow-purple">
                 <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
@@ -76,7 +90,7 @@ export default function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1 relative z-10">
               {navLinks.map((link) => (
                 <button
                   key={link.name}
@@ -90,13 +104,18 @@ export default function Header() {
             </div>
 
             {/* Desktop CTA */}
-            <div className="hidden md:block">
-              <button
+            <div className="hidden md:block relative z-10">
+              <GlassSurface
+                as="button"
                 onClick={() => scrollToSection('#products')}
-                className="btn-primary px-5 lg:px-6 py-2.5 text-sm font-medium text-white rounded-xl"
+                borderRadius={12}
+                backgroundOpacity={0.1}
+                saturation={1.2}
+                brightness={55}
+                className="px-5 lg:px-6 py-2.5 text-sm font-medium text-white cursor-pointer hover:scale-105 transition-transform duration-300"
               >
                 <span className="relative z-10">View Products</span>
-              </button>
+              </GlassSurface>
             </div>
 
             {/* Mobile Menu Button */}
@@ -156,7 +175,13 @@ export default function Header() {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="md:hidden absolute top-full left-0 right-0 px-5 pb-5"
             >
-              <div className="glass-strong rounded-2xl p-2 mt-2">
+              <GlassSurface
+                borderRadius={16}
+                backgroundOpacity={0.08}
+                saturation={1.3}
+                brightness={40}
+                className="p-2 mt-2"
+              >
                 {navLinks.map((link, index) => (
                   <motion.button
                     key={link.name}
@@ -175,14 +200,18 @@ export default function Header() {
                   transition={{ delay: 0.25 }}
                   className="p-2 pt-0"
                 >
-                  <button
+                  <GlassSurface
+                    as="button"
                     onClick={() => scrollToSection('#products')}
-                    className="w-full btn-primary px-4 py-4 text-center text-base font-medium text-white rounded-xl"
+                    borderRadius={12}
+                    backgroundOpacity={0.15}
+                    saturation={1.2}
+                    className="w-full px-4 py-4 text-center text-base font-medium text-white cursor-pointer"
                   >
                     <span className="relative z-10">View Products</span>
-                  </button>
+                  </GlassSurface>
                 </motion.div>
-              </div>
+              </GlassSurface>
             </motion.div>
           </>
         )}
