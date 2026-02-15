@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
+import * as THREE from 'three'
 import gsap from 'gsap'
 
 interface BulgeDistortionProps {
@@ -8,383 +9,279 @@ interface BulgeDistortionProps {
   className?: string
 }
 
-// Vertex shader - passes UV coordinates to fragment shader
-const vertexShader = `
-  attribute vec2 a_position;
-  attribute vec2 a_texCoord;
-  varying vec2 v_texCoord;
+const MAX_COLORS = 8
 
-  void main() {
-    gl_Position = vec4(a_position, 0.0, 1.0);
-    v_texCoord = a_texCoord;
-  }
-`
+const frag = `
+#define MAX_COLORS ${MAX_COLORS}
+uniform vec2 uCanvas;
+uniform float uTime;
+uniform float uSpeed;
+uniform vec2 uRot;
+uniform int uColorCount;
+uniform vec3 uColors[MAX_COLORS];
+uniform int uTransparent;
+uniform float uScale;
+uniform float uFrequency;
+uniform float uWarpStrength;
+uniform vec2 uPointer;
+uniform float uMouseInfluence;
+uniform float uParallax;
+uniform float uNoise;
+varying vec2 vUv;
 
-// Fragment shader with bulge distortion effect
-const fragmentShader = `
-  precision highp float;
+void main() {
+  float t = uTime * uSpeed;
+  vec2 p = vUv * 2.0 - 1.0;
+  p += uPointer * uParallax * 0.1;
+  vec2 rp = vec2(p.x * uRot.x - p.y * uRot.y, p.x * uRot.y + p.y * uRot.x);
+  vec2 q = vec2(rp.x * (uCanvas.x / uCanvas.y), rp.y);
+  q /= max(uScale, 0.0001);
+  q /= 0.5 + 0.2 * dot(q, q);
+  q += 0.2 * cos(t) - 7.56;
+  vec2 toward = (uPointer - rp);
+  q += toward * uMouseInfluence * 0.2;
 
-  varying vec2 v_texCoord;
-  uniform vec2 u_mouse;
-  uniform float u_strength;
-  uniform float u_radius;
-  uniform float u_time;
-  uniform vec2 u_resolution;
+  vec3 col = vec3(0.0);
+  float a = 1.0;
 
-  // Bulge distortion function
-  vec2 bulge(vec2 uv, vec2 center, float strength, float radius) {
-    vec2 toCenter = uv - center;
-    float dist = length(toCenter);
-    float distNorm = dist / radius;
-
-    if (dist < radius) {
-      // Smooth falloff using smoothstep
-      float bulgeAmount = 1.0 - smoothstep(0.0, 1.0, distNorm);
-      bulgeAmount = pow(bulgeAmount, 2.0);
-
-      // Apply bulge - push outward from center
-      float scale = 1.0 + strength * bulgeAmount;
-      toCenter *= scale;
+  if (uColorCount > 0) {
+    vec2 s = q;
+    vec3 sumCol = vec3(0.0);
+    float cover = 0.0;
+    for (int i = 0; i < MAX_COLORS; ++i) {
+      if (i >= uColorCount) break;
+      s -= 0.01;
+      vec2 r = sin(1.5 * (s.yx * uFrequency) + 2.0 * cos(s * uFrequency));
+      float m0 = length(r + sin(5.0 * r.y * uFrequency - 3.0 * t + float(i)) / 4.0);
+      float kBelow = clamp(uWarpStrength, 0.0, 1.0);
+      float kMix = pow(kBelow, 0.3);
+      float gain = 1.0 + max(uWarpStrength - 1.0, 0.0);
+      vec2 disp = (r - s) * kBelow;
+      vec2 warped = s + disp * gain;
+      float m1 = length(warped + sin(5.0 * warped.y * uFrequency - 3.0 * t + float(i)) / 4.0);
+      float m = mix(m0, m1, kMix);
+      float w = 1.0 - exp(-6.0 / exp(6.0 * m));
+      sumCol += uColors[i] * w;
+      cover = max(cover, w);
     }
-
-    return center + toCenter;
+    col = clamp(sumCol, 0.0, 1.0);
+    a = uTransparent > 0 ? cover : 1.0;
+  } else {
+    vec2 s = q;
+    for (int k = 0; k < 3; ++k) {
+      s -= 0.01;
+      vec2 r = sin(1.5 * (s.yx * uFrequency) + 2.0 * cos(s * uFrequency));
+      float m0 = length(r + sin(5.0 * r.y * uFrequency - 3.0 * t + float(k)) / 4.0);
+      float kBelow = clamp(uWarpStrength, 0.0, 1.0);
+      float kMix = pow(kBelow, 0.3);
+      float gain = 1.0 + max(uWarpStrength - 1.0, 0.0);
+      vec2 disp = (r - s) * kBelow;
+      vec2 warped = s + disp * gain;
+      float m1 = length(warped + sin(5.0 * warped.y * uFrequency - 3.0 * t + float(k)) / 4.0);
+      float m = mix(m0, m1, kMix);
+      col[k] = 1.0 - exp(-6.0 / exp(6.0 * m));
+    }
+    a = uTransparent > 0 ? max(max(col.r, col.g), col.b) : 1.0;
   }
 
-  // Gradient orb function
-  vec3 orb(vec2 uv, vec2 center, vec3 color, float size) {
-    float dist = length(uv - center);
-    float intensity = 1.0 - smoothstep(0.0, size, dist);
-    intensity = pow(intensity, 1.5);
-    return color * intensity;
+  if (uNoise > 0.0001) {
+    float n = fract(sin(dot(gl_FragCoord.xy + vec2(uTime), vec2(12.9898, 78.233))) * 43758.5453123);
+    col += (n - 0.5) * uNoise;
+    col = clamp(col, 0.0, 1.0);
   }
 
-  void main() {
-    vec2 uv = v_texCoord;
-    float aspect = u_resolution.x / u_resolution.y;
-
-    // Apply aspect ratio correction for mouse position
-    vec2 mouse = u_mouse;
-
-    // Apply bulge distortion
-    vec2 distortedUV = bulge(uv, mouse, u_strength * 0.3, u_radius);
-
-    // Correct for aspect ratio in orb calculations
-    vec2 uvAspect = distortedUV;
-    uvAspect.x *= aspect;
-
-    vec2 mouseAspect = mouse;
-    mouseAspect.x *= aspect;
-
-    // Animated time factor for subtle movement
-    float t = u_time * 0.5;
-
-    // Create gradient orbs (similar to the CSS orbs)
-    vec3 color = vec3(0.02, 0.02, 0.06); // Dark background
-
-    // Purple orb - top left
-    vec2 purpleCenter = vec2(-0.1 + sin(t * 0.3) * 0.05, 0.8 + cos(t * 0.2) * 0.03);
-    purpleCenter.x *= aspect;
-    color += orb(uvAspect, purpleCenter, vec3(0.5, 0.2, 0.8), 0.8);
-
-    // Cyan orb - bottom right
-    vec2 cyanCenter = vec2(1.1 + cos(t * 0.25) * 0.04, 0.1 + sin(t * 0.35) * 0.03);
-    cyanCenter.x *= aspect;
-    color += orb(uvAspect, cyanCenter, vec3(0.1, 0.7, 0.9), 0.7);
-
-    // Rose/pink orb - middle right
-    vec2 roseCenter = vec2(0.85 + sin(t * 0.4) * 0.03, 0.55 + cos(t * 0.3) * 0.04);
-    roseCenter.x *= aspect;
-    color += orb(uvAspect, roseCenter, vec3(0.9, 0.3, 0.5), 0.5) * 0.6;
-
-    // Add subtle glow around mouse
-    float mouseDist = length(uvAspect - mouseAspect);
-    float mouseGlow = exp(-mouseDist * 3.0) * u_strength * 0.15;
-    color += vec3(0.3, 0.5, 0.8) * mouseGlow;
-
-    // Add subtle noise/grain for texture
-    float noise = fract(sin(dot(uv * 1000.0, vec2(12.9898, 78.233))) * 43758.5453);
-    color += (noise - 0.5) * 0.02;
-
-    gl_FragColor = vec4(color, 1.0);
-  }
+  vec3 rgb = (uTransparent > 0) ? col * a : col;
+  gl_FragColor = vec4(rgb, a);
+}
 `
 
-function createShader(gl: WebGLRenderingContext, type: number, source: string): WebGLShader | null {
-  const shader = gl.createShader(type)
-  if (!shader) return null
-
-  gl.shaderSource(shader, source)
-  gl.compileShader(shader)
-
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    console.error('Shader compile error:', gl.getShaderInfoLog(shader))
-    gl.deleteShader(shader)
-    return null
-  }
-
-  return shader
+const vert = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 1.0);
 }
+`
 
-function createProgram(gl: WebGLRenderingContext, vertShader: WebGLShader, fragShader: WebGLShader): WebGLProgram | null {
-  const program = gl.createProgram()
-  if (!program) return null
-
-  gl.attachShader(program, vertShader)
-  gl.attachShader(program, fragShader)
-  gl.linkProgram(program)
-
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('Program link error:', gl.getProgramInfoLog(program))
-    gl.deleteProgram(program)
-    return null
-  }
-
-  return program
+function hexToVec3(hex: string): THREE.Vector3 {
+  const h = hex.replace('#', '').trim()
+  const v =
+    h.length === 3
+      ? [parseInt(h[0] + h[0], 16), parseInt(h[1] + h[1], 16), parseInt(h[2] + h[2], 16)]
+      : [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]
+  return new THREE.Vector3(v[0] / 255, v[1] / 255, v[2] / 255)
 }
 
 export default function BulgeDistortion({ children, className = '' }: BulgeDistortionProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const glRef = useRef<WebGLRenderingContext | null>(null)
-  const programRef = useRef<WebGLProgram | null>(null)
-  const animationRef = useRef<number>(0)
-  const uniformsRef = useRef<{
-    mouse: WebGLUniformLocation | null
-    strength: WebGLUniformLocation | null
-    radius: WebGLUniformLocation | null
-    time: WebGLUniformLocation | null
-    resolution: WebGLUniformLocation | null
-  }>({ mouse: null, strength: null, radius: null, time: null, resolution: null })
+  const containerRef = useRef<HTMLElement>(null)
+  const canvasContainerRef = useRef<HTMLDivElement>(null)
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null)
+  const rafRef = useRef<number | null>(null)
+  const pointerTargetRef = useRef(new THREE.Vector2(0, 0))
+  const pointerCurrentRef = useRef(new THREE.Vector2(0, 0))
+  const mouseInfluenceRef = useRef({ value: 1.5 })
 
-  // Animation values
-  const mouseRef = useRef({ x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5 })
-  const strengthRef = useRef({ current: 0, target: 0 })
-  const startTimeRef = useRef(Date.now())
-
-  const initGL = useCallback(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return false
-
-    const gl = canvas.getContext('webgl', {
-      alpha: true,
-      antialias: true,
-      premultipliedAlpha: false
-    })
-    if (!gl) {
-      console.error('WebGL not supported')
-      return false
-    }
-
-    glRef.current = gl
-
-    // Create shaders
-    const vertShader = createShader(gl, gl.VERTEX_SHADER, vertexShader)
-    const fragShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShader)
-    if (!vertShader || !fragShader) return false
-
-    // Create program
-    const program = createProgram(gl, vertShader, fragShader)
-    if (!program) return false
-
-    programRef.current = program
-    gl.useProgram(program)
-
-    // Set up geometry (full screen quad)
-    const positions = new Float32Array([
-      -1, -1,
-       1, -1,
-      -1,  1,
-       1,  1,
-    ])
-
-    const texCoords = new Float32Array([
-      0, 0,
-      1, 0,
-      0, 1,
-      1, 1,
-    ])
-
-    // Position buffer
-    const posBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW)
-
-    const posLocation = gl.getAttribLocation(program, 'a_position')
-    gl.enableVertexAttribArray(posLocation)
-    gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0)
-
-    // TexCoord buffer
-    const texBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW)
-
-    const texLocation = gl.getAttribLocation(program, 'a_texCoord')
-    gl.enableVertexAttribArray(texLocation)
-    gl.vertexAttribPointer(texLocation, 2, gl.FLOAT, false, 0, 0)
-
-    // Get uniform locations
-    uniformsRef.current = {
-      mouse: gl.getUniformLocation(program, 'u_mouse'),
-      strength: gl.getUniformLocation(program, 'u_strength'),
-      radius: gl.getUniformLocation(program, 'u_radius'),
-      time: gl.getUniformLocation(program, 'u_time'),
-      resolution: gl.getUniformLocation(program, 'u_resolution'),
-    }
-
-    // Set initial uniforms
-    gl.uniform2f(uniformsRef.current.mouse, 0.5, 0.5)
-    gl.uniform1f(uniformsRef.current.strength, 0)
-    gl.uniform1f(uniformsRef.current.radius, 0.4)
-
-    return true
-  }, [])
-
-  const resize = useCallback(() => {
-    const canvas = canvasRef.current
-    const container = containerRef.current
-    const gl = glRef.current
-    if (!canvas || !container || !gl) return
-
-    const dpr = Math.min(window.devicePixelRatio, 2)
-    const rect = container.getBoundingClientRect()
-
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
-    canvas.style.width = `${rect.width}px`
-    canvas.style.height = `${rect.height}px`
-
-    gl.viewport(0, 0, canvas.width, canvas.height)
-
-    if (uniformsRef.current.resolution) {
-      gl.uniform2f(uniformsRef.current.resolution, canvas.width, canvas.height)
-    }
-  }, [])
-
-  const render = useCallback(() => {
-    const gl = glRef.current
-    if (!gl || !programRef.current) return
-
-    // Smooth mouse interpolation
-    const mouse = mouseRef.current
-    mouse.x += (mouse.targetX - mouse.x) * 0.1
-    mouse.y += (mouse.targetY - mouse.y) * 0.1
-
-    // Smooth strength interpolation
-    const strength = strengthRef.current
-    strength.current += (strength.target - strength.current) * 0.08
-
-    // Update uniforms
-    gl.uniform2f(uniformsRef.current.mouse, mouse.x, 1.0 - mouse.y)
-    gl.uniform1f(uniformsRef.current.strength, strength.current)
-    gl.uniform1f(uniformsRef.current.time, (Date.now() - startTimeRef.current) / 1000)
-
-    // Clear and draw
-    gl.clearColor(0, 0, 0, 0)
-    gl.clear(gl.COLOR_BUFFER_BIT)
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-
-    animationRef.current = requestAnimationFrame(render)
-  }, [])
+  // User's settings
+  const rotation = -180
+  const speed = 0.47
+  const mouseInfluence = 1.5
+  const parallax = 1.1
+  const noise = 0.51
+  const colors = ['#6b21a8', '#0ea5e9', '#e11d48', '#1e1b4b']
 
   useEffect(() => {
-    if (!initGL()) return
+    const container = canvasContainerRef.current
+    if (!container) return
 
-    resize()
-    render()
+    const scene = new THREE.Scene()
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+    const geometry = new THREE.PlaneGeometry(2, 2)
 
-    window.addEventListener('resize', resize)
+    const uColorsArray = Array.from({ length: MAX_COLORS }, () => new THREE.Vector3(0, 0, 0))
+    const parsedColors = colors.filter(Boolean).slice(0, MAX_COLORS).map(hexToVec3)
+    parsedColors.forEach((c, i) => uColorsArray[i].copy(c))
+
+    const rad = (rotation * Math.PI) / 180
+    const material = new THREE.ShaderMaterial({
+      vertexShader: vert,
+      fragmentShader: frag,
+      uniforms: {
+        uCanvas: { value: new THREE.Vector2(1, 1) },
+        uTime: { value: 0 },
+        uSpeed: { value: speed },
+        uRot: { value: new THREE.Vector2(Math.cos(rad), Math.sin(rad)) },
+        uColorCount: { value: parsedColors.length },
+        uColors: { value: uColorsArray },
+        uTransparent: { value: 0 },
+        uScale: { value: 1 },
+        uFrequency: { value: 1 },
+        uWarpStrength: { value: 1 },
+        uPointer: { value: new THREE.Vector2(0, 0) },
+        uMouseInfluence: { value: mouseInfluence },
+        uParallax: { value: parallax },
+        uNoise: { value: noise },
+      },
+      premultipliedAlpha: true,
+      transparent: false,
+    })
+    materialRef.current = material
+
+    const mesh = new THREE.Mesh(geometry, material)
+    scene.add(mesh)
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: false,
+      powerPreference: 'high-performance',
+      alpha: false,
+    })
+    rendererRef.current = renderer
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.setClearColor(0x000000, 1)
+    renderer.domElement.style.width = '100%'
+    renderer.domElement.style.height = '100%'
+    renderer.domElement.style.display = 'block'
+    container.appendChild(renderer.domElement)
+
+    const clock = new THREE.Clock()
+
+    const handleResize = () => {
+      const w = container.clientWidth || 1
+      const h = container.clientHeight || 1
+      renderer.setSize(w, h, false)
+      material.uniforms.uCanvas.value.set(w, h)
+    }
+
+    handleResize()
+
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
+
+    const loop = () => {
+      const dt = clock.getDelta()
+      const elapsed = clock.elapsedTime
+      material.uniforms.uTime.value = elapsed
+      material.uniforms.uMouseInfluence.value = mouseInfluenceRef.current.value
+
+      // Smooth pointer lerp
+      const amt = Math.min(1, dt * 8)
+      pointerCurrentRef.current.lerp(pointerTargetRef.current, amt)
+      material.uniforms.uPointer.value.copy(pointerCurrentRef.current)
+
+      renderer.render(scene, camera)
+      rafRef.current = requestAnimationFrame(loop)
+    }
+    rafRef.current = requestAnimationFrame(loop)
 
     return () => {
-      window.removeEventListener('resize', resize)
-      cancelAnimationFrame(animationRef.current)
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
+      resizeObserver.disconnect()
+      geometry.dispose()
+      material.dispose()
+      renderer.dispose()
+      if (renderer.domElement && renderer.domElement.parentElement === container) {
+        container.removeChild(renderer.domElement)
+      }
     }
-  }, [initGL, resize, render])
+  }, [])
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  // Pointer events - uses native listeners to avoid React synthetic event issues on mobile
+  useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    const rect = container.getBoundingClientRect()
-    mouseRef.current.targetX = (e.clientX - rect.left) / rect.width
-    mouseRef.current.targetY = (e.clientY - rect.top) / rect.height
-  }, [])
+    const handlePointerMove = (e: PointerEvent) => {
+      const rect = container.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / (rect.width || 1)) * 2 - 1
+      const y = -(((e.clientY - rect.top) / (rect.height || 1)) * 2 - 1)
+      pointerTargetRef.current.set(x, y)
+    }
 
-  const handleMouseEnter = useCallback(() => {
-    gsap.to(strengthRef.current, {
-      target: 1,
-      duration: 0.6,
-      ease: 'power2.out',
-    })
-  }, [])
+    const handlePointerEnter = () => {
+      gsap.to(mouseInfluenceRef.current, {
+        value: mouseInfluence,
+        duration: 0.6,
+        ease: 'power2.out',
+      })
+    }
 
-  const handleMouseLeave = useCallback(() => {
-    gsap.to(strengthRef.current, {
-      target: 0,
-      duration: 0.8,
-      ease: 'power3.out',
-    })
+    const handlePointerLeave = () => {
+      // GSAP reset on mouse leave
+      gsap.to(mouseInfluenceRef.current, {
+        value: 0,
+        duration: 1.0,
+        ease: 'power3.out',
+      })
+      gsap.to(pointerTargetRef.current, {
+        x: 0,
+        y: 0,
+        duration: 1.2,
+        ease: 'power2.out',
+      })
+    }
 
-    // Smoothly return mouse to center
-    gsap.to(mouseRef.current, {
-      targetX: 0.5,
-      targetY: 0.5,
-      duration: 1,
-      ease: 'power2.out',
-    })
-  }, [])
+    container.addEventListener('pointermove', handlePointerMove, { passive: true })
+    container.addEventListener('pointerenter', handlePointerEnter)
+    container.addEventListener('pointerleave', handlePointerLeave)
 
-  // Touch handlers for mobile
-  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    const container = containerRef.current
-    if (!container || !e.touches[0]) return
-
-    const rect = container.getBoundingClientRect()
-    mouseRef.current.targetX = (e.touches[0].clientX - rect.left) / rect.width
-    mouseRef.current.targetY = (e.touches[0].clientY - rect.top) / rect.height
-  }, [])
-
-  const handleTouchStart = useCallback(() => {
-    gsap.to(strengthRef.current, {
-      target: 1,
-      duration: 0.4,
-      ease: 'power2.out',
-    })
-  }, [])
-
-  const handleTouchEnd = useCallback(() => {
-    gsap.to(strengthRef.current, {
-      target: 0,
-      duration: 0.6,
-      ease: 'power3.out',
-    })
-
-    gsap.to(mouseRef.current, {
-      targetX: 0.5,
-      targetY: 0.5,
-      duration: 0.8,
-      ease: 'power2.out',
-    })
+    return () => {
+      container.removeEventListener('pointermove', handlePointerMove)
+      container.removeEventListener('pointerenter', handlePointerEnter)
+      container.removeEventListener('pointerleave', handlePointerLeave)
+    }
   }, [])
 
   return (
-    <div
-      ref={containerRef}
-      className={`relative ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchMove={handleTouchMove}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full pointer-events-none"
+    <section ref={containerRef} className={`relative ${className}`}>
+      <div
+        ref={canvasContainerRef}
+        className="absolute inset-0 overflow-hidden"
         style={{ zIndex: 0 }}
       />
       <div className="relative" style={{ zIndex: 1 }}>
         {children}
       </div>
-    </div>
+    </section>
   )
 }

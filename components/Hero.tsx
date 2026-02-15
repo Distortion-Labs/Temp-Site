@@ -12,7 +12,11 @@ const WebGLDistortedText = dynamic(() => import('./WebGLDistortedText'), {
 
 const BulgeDistortion = dynamic(() => import('./BulgeDistortion'), {
   ssr: false,
-  loading: () => null
+  loading: () => (
+    <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5 bg-[#0a0a1e]">
+      <div className="relative" style={{ zIndex: 1 }} />
+    </section>
+  )
 })
 
 export default function Hero() {
