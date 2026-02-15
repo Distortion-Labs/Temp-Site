@@ -27,12 +27,15 @@ export default function Hero() {
       {/* ColorBends WebGL background - using R3F Canvas for stable mobile rendering */}
       <div className="absolute inset-0">
         <ColorBends
-          rotation={-180}
-          speed={0.47}
-          mouseInfluence={1.5}
-          parallax={1.1}
-          noise={0.51}
-          colors={['#6b21a8', '#0ea5e9', '#e11d48', '#1e1b4b']}
+          rotation={101}
+          speed={0.14}
+          scale={0.2}
+          frequency={1.6}
+          warpStrength={0.9}
+          autoRotate={5}
+          mouseInfluence={1.4}
+          parallax={0}
+          noise={0.84}
           transparent={false}
         />
       </div>

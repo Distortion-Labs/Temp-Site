@@ -113,10 +113,12 @@ interface ColorBendsPlaneProps {
   uniforms: Record<string, { value: unknown }>
   pointerRef: MutableRefObject<{ x: number; y: number; targetX: number; targetY: number }>
   mouseInfluenceRef: MutableRefObject<{ value: number }>
+  rotation: number
+  autoRotate: number
 }
 
 const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function ColorBendsPlane(
-  { uniforms, pointerRef, mouseInfluenceRef },
+  { uniforms, pointerRef, mouseInfluenceRef, rotation, autoRotate },
   ref
 ) {
   const { viewport, size } = useThree()
@@ -140,6 +142,12 @@ const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function Co
     if (ref && 'current' in ref && ref.current) {
       const mat = ref.current.material as THREE.ShaderMaterial
       mat.uniforms.uTime.value += delta
+
+      // Update rotation with autoRotate
+      const elapsed = state.clock.elapsedTime
+      const deg = (rotation % 360) + autoRotate * elapsed
+      const rad = (deg * Math.PI) / 180
+      mat.uniforms.uRot.value.set(Math.cos(rad), Math.sin(rad))
 
       // Smooth pointer interpolation
       const pointer = pointerRef.current
@@ -170,6 +178,7 @@ interface ColorBendsProps {
   speed?: number
   colors?: string[]
   transparent?: boolean
+  autoRotate?: number
   scale?: number
   frequency?: number
   warpStrength?: number
@@ -179,16 +188,17 @@ interface ColorBendsProps {
 }
 
 export default function ColorBends({
-  rotation = -180,
-  speed = 0.47,
+  rotation = 101,
+  speed = 0.14,
   colors = ['#6b21a8', '#0ea5e9', '#e11d48', '#1e1b4b'],
   transparent = false,
-  scale = 1,
-  frequency = 1,
-  warpStrength = 1,
-  mouseInfluence = 1.5,
-  parallax = 1.1,
-  noise = 0.51
+  autoRotate = 5,
+  scale = 0.2,
+  frequency = 1.6,
+  warpStrength = 0.9,
+  mouseInfluence = 1.4,
+  parallax = 0,
+  noise = 0.84
 }: ColorBendsProps) {
   const meshRef = useRef<THREE.Mesh>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -264,7 +274,7 @@ export default function ColorBends({
       uParallax: { value: parallax },
       uNoise: { value: noise }
     }
-  }, [rotation, speed, colors, transparent, scale, frequency, warpStrength, mouseInfluence, parallax, noise])
+  }, [rotation, speed, colors, transparent, autoRotate, scale, frequency, warpStrength, mouseInfluence, parallax, noise])
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
@@ -274,6 +284,8 @@ export default function ColorBends({
           uniforms={uniforms}
           pointerRef={pointerRef}
           mouseInfluenceRef={mouseInfluenceRef}
+          rotation={rotation}
+          autoRotate={autoRotate}
         />
       </Canvas>
     </div>
