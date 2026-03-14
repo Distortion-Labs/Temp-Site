@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowDown, Chrome, Sparkles } from 'lucide-react'
+import { ArrowDown, Chrome, Sparkles, Code2 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // Dynamic imports to prevent SSR issues with canvas/WebGL
@@ -34,7 +34,7 @@ export default function Hero() {
           speed={0.47}
           mouseInfluence={1.5}
           parallax={1.1}
-          noise={0}
+          noise={0.18}
           colors={['#6b21a8', '#0ea5e9', '#e11d48', '#1e1b4b']}
           transparent={false}
         />
@@ -50,6 +50,18 @@ export default function Hero() {
       <div className="absolute bottom-[25%] right-[10%] hidden lg:block animate-fade-in-delay-2">
         <div className="w-14 h-14 glass-card rounded-xl flex items-center justify-center animate-float-alt">
           <Sparkles className="w-6 h-6 text-primary-400" />
+        </div>
+      </div>
+
+      <div className="absolute top-[35%] right-[5%] hidden xl:block animate-fade-in-delay-2">
+        <div className="w-12 h-12 glass-subtle rounded-lg flex items-center justify-center animate-float opacity-60">
+          <Code2 className="w-5 h-5 text-white/40" />
+        </div>
+      </div>
+
+      <div className="absolute bottom-[35%] left-[5%] hidden xl:block animate-fade-in-delay">
+        <div className="w-10 h-10 glass-subtle rounded-lg flex items-center justify-center animate-float-alt opacity-50">
+          <div className="w-3 h-3 rounded-full bg-gradient-to-br from-cyan-400 to-primary-500" />
         </div>
       </div>
 
