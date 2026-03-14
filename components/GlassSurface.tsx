@@ -1,7 +1,7 @@
 'use client'
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useRef, useId } from 'react'
+import { useEffect, useState, useRef, useId, useCallback } from 'react'
 import './GlassSurface.css'
 
 interface GlassSurfaceProps {
@@ -73,7 +73,7 @@ export default function GlassSurface({
   const blueChannelRef = useRef<SVGFEDisplacementMapElement>(null)
   const gaussianBlurRef = useRef<SVGFEGaussianBlurElement>(null)
 
-  const generateDisplacementMap = () => {
+  const generateDisplacementMap = useCallback(() => {
     const rect = containerRef.current?.getBoundingClientRect()
     const actualWidth = rect?.width || 400
     const actualHeight = rect?.height || 200
@@ -99,11 +99,11 @@ export default function GlassSurface({
     `
 
     return `data:image/svg+xml,${encodeURIComponent(svgContent)}`
-  }
+  }, [borderRadius, borderWidth, brightness, opacity, blur, mixBlendMode, redGradId, blueGradId])
 
-  const updateDisplacementMap = () => {
+  const updateDisplacementMap = useCallback(() => {
     feImageRef.current?.setAttribute('href', generateDisplacementMap())
-  }
+  }, [generateDisplacementMap])
 
   useEffect(() => {
     updateDisplacementMap()
@@ -126,15 +126,20 @@ export default function GlassSurface({
     xChannel, yChannel, mixBlendMode
   ])
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
   useEffect(() => {
     if (!containerRef.current) return
     const el = containerRef.current
     const resizeObserver = new ResizeObserver(() => {
-      setTimeout(updateDisplacementMap, 0)
+      clearTimeout(debounceRef.current)
+      debounceRef.current = setTimeout(updateDisplacementMap, 150)
     })
     resizeObserver.observe(el)
-    return () => resizeObserver.disconnect()
-  }, [])
+    return () => {
+      resizeObserver.disconnect()
+      clearTimeout(debounceRef.current)
+    }
+  }, [updateDisplacementMap])
 
   useEffect(() => {
     const supportsSVGFilters = () => {

@@ -1,7 +1,8 @@
 'use client'
 
-import { Zap, Github, Twitter } from 'lucide-react'
+import { Github, Twitter } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const navLinks = [
   { name: 'Products', href: '#products' },
@@ -38,8 +39,14 @@ export default function Footer() {
             }}
             className="flex items-center gap-2.5 mb-6 group"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-cyan-500 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-              <Zap className="w-4 h-4 text-white" strokeWidth={2.5} />
+            <div className="relative w-9 h-9 group-hover:scale-105 transition-transform duration-300">
+              <Image
+                src="/logo.png"
+                alt="Distortion Labs"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="font-display text-lg font-semibold text-white tracking-tight">
               Distortion<span className="text-primary-400">Labs</span>

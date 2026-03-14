@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import GlassSurface from './GlassSurface'
 
 const navLinks = [
   { name: 'Products', href: '#products' },
@@ -55,20 +54,11 @@ export default function Header() {
       <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
         <div className="container-main">
           <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500">
-            {/* Liquid glass backdrop - only mounted when scrolled */}
+            {/* Glass backdrop - CSS-based for performance */}
             {isScrolled && (
-              <GlassSurface
-                borderRadius={16}
-                backgroundOpacity={0.05}
-                saturation={1.5}
-                brightness={45}
-                blur={8}
-                style={{
-                  position: 'absolute',
-                  inset: '0',
-                  zIndex: 0,
-                  pointerEvents: 'none'
-                }}
+              <div
+                className="glass-frosted absolute inset-0 rounded-2xl pointer-events-none"
+                style={{ zIndex: 0 }}
               />
             )}
 
@@ -112,17 +102,12 @@ export default function Header() {
 
             {/* Desktop CTA */}
             <div className="hidden md:block relative z-10">
-              <GlassSurface
-                as="button"
+              <button
                 onClick={() => scrollToSection('#products')}
-                borderRadius={12}
-                backgroundOpacity={0.1}
-                saturation={1.2}
-                brightness={55}
-                className="px-5 lg:px-6 py-2.5 text-sm font-medium text-white cursor-pointer hover:scale-105 transition-transform duration-300"
+                className="btn-glass px-5 lg:px-6 py-2.5 text-sm font-medium text-white rounded-xl cursor-pointer hover:scale-105 transition-transform duration-300"
               >
-                <span className="relative z-10">View Products</span>
-              </GlassSurface>
+                View Products
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -182,13 +167,7 @@ export default function Header() {
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="md:hidden absolute top-full left-0 right-0 px-5 pb-5"
             >
-              <GlassSurface
-                borderRadius={16}
-                backgroundOpacity={0.08}
-                saturation={1.3}
-                brightness={40}
-                className="p-2 mt-2"
-              >
+              <div className="glass-frosted rounded-2xl p-2 mt-2">
                 {navLinks.map((link, index) => (
                   <motion.button
                     key={link.name}
@@ -207,18 +186,14 @@ export default function Header() {
                   transition={{ delay: 0.25 }}
                   className="p-2 pt-0"
                 >
-                  <GlassSurface
-                    as="button"
+                  <button
                     onClick={() => scrollToSection('#products')}
-                    borderRadius={12}
-                    backgroundOpacity={0.15}
-                    saturation={1.2}
-                    className="w-full px-4 py-4 text-center text-base font-medium text-white cursor-pointer"
+                    className="w-full btn-glass px-4 py-4 text-center text-base font-medium text-white rounded-xl cursor-pointer"
                   >
-                    <span className="relative z-10">View Products</span>
-                  </GlassSurface>
+                    View Products
+                  </button>
                 </motion.div>
-              </GlassSurface>
+              </div>
             </motion.div>
           </>
         )}

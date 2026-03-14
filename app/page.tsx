@@ -13,10 +13,10 @@ export default function Home() {
       <Hero />
       <SilkSection>
         <Products />
-        <About />
-        <Contact />
-        <Footer />
       </SilkSection>
+      <About />
+      <Contact />
+      <Footer />
     </main>
   )
 }
