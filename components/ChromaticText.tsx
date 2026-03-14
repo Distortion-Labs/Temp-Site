@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, useState } from 'react'
 
 interface ChromaticTextProps {
   children: string
@@ -16,6 +16,15 @@ export default function ChromaticText({ children, className = '' }: ChromaticTex
   const mouseRef = useRef({ x: 0, y: 0 })
   const scrollRef = useRef(0)
   const rafRef = useRef<number | null>(null)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const update = useCallback(() => {
     const hoverMult = isHoveringRef.current ? 1.6 : 1
@@ -46,6 +55,8 @@ export default function ChromaticText({ children, className = '' }: ChromaticTex
   }, [update])
 
   useEffect(() => {
+    if (prefersReducedMotion) return
+
     const handleScroll = () => {
       const el = containerRef.current
       if (!el) return
@@ -71,7 +82,15 @@ export default function ChromaticText({ children, className = '' }: ChromaticTex
       window.removeEventListener('mousemove', handleMouseMove)
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     }
-  }, [scheduleUpdate])
+  }, [scheduleUpdate, prefersReducedMotion])
+
+  if (prefersReducedMotion) {
+    return (
+      <span className={`text-gradient-subtle ${className}`}>
+        {children}
+      </span>
+    )
+  }
 
   return (
     <div

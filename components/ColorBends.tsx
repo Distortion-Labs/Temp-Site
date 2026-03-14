@@ -2,7 +2,7 @@
 
 /* eslint-disable react/no-unknown-property */
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, MutableRefObject } from 'react'
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, useState, MutableRefObject } from 'react'
 import * as THREE from 'three'
 import gsap from 'gsap'
 
@@ -113,13 +113,14 @@ interface ColorBendsPlaneProps {
   uniforms: Record<string, { value: unknown }>
   pointerRef: MutableRefObject<{ x: number; y: number; targetX: number; targetY: number }>
   mouseInfluenceRef: MutableRefObject<{ value: number }>
+  visibleRef: MutableRefObject<boolean>
 }
 
 const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function ColorBendsPlane(
-  { uniforms, pointerRef, mouseInfluenceRef },
+  { uniforms, pointerRef, mouseInfluenceRef, visibleRef },
   ref
 ) {
-  const { viewport, size } = useThree()
+  const { viewport, size, invalidate } = useThree()
 
   useLayoutEffect(() => {
     if (ref && 'current' in ref && ref.current) {
@@ -137,6 +138,8 @@ const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function Co
   }, [ref, size])
 
   useFrame((state, delta) => {
+    if (!visibleRef.current) return
+
     if (ref && 'current' in ref && ref.current) {
       const mat = ref.current.material as THREE.ShaderMaterial
       mat.uniforms.uTime.value += delta
@@ -150,6 +153,8 @@ const ColorBendsPlane = forwardRef<THREE.Mesh, ColorBendsPlaneProps>(function Co
       // Update mouse influence from GSAP animated value
       mat.uniforms.uMouseInfluence.value = mouseInfluenceRef.current.value
     }
+
+    invalidate()
   })
 
   return (
@@ -194,6 +199,28 @@ export default function ColorBends({
   const containerRef = useRef<HTMLDivElement>(null)
   const pointerRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0 })
   const mouseInfluenceRef = useRef({ value: mouseInfluence })
+  const visibleRef = useRef(true)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  // Visibility detection — stop rendering when off-screen
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { visibleRef.current = entry.isIntersecting },
+      { threshold: 0, rootMargin: '200px 0px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   // Pointer events with GSAP reset
   useEffect(() => {
@@ -266,14 +293,24 @@ export default function ColorBends({
     }
   }, [rotation, speed, colors, transparent, scale, frequency, warpStrength, mouseInfluence, parallax, noise])
 
+  if (prefersReducedMotion) {
+    return (
+      <div
+        ref={containerRef}
+        className="w-full h-full bg-gradient-to-br from-purple-900/80 via-void to-cyan-900/30"
+      />
+    )
+  }
+
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <Canvas dpr={[1, 1.5]} frameloop="always">
+      <Canvas dpr={[1, 1.5]} frameloop="demand">
         <ColorBendsPlane
           ref={meshRef}
           uniforms={uniforms}
           pointerRef={pointerRef}
           mouseInfluenceRef={mouseInfluenceRef}
+          visibleRef={visibleRef}
         />
       </Canvas>
     </div>

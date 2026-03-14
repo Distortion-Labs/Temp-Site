@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Code2, Lightbulb, Heart, Rocket } from 'lucide-react'
+import { Code2, Lightbulb, Heart, Rocket, Globe, Layout, Smartphone } from 'lucide-react'
 
 const principles = [
   {
@@ -123,7 +123,7 @@ export default function About() {
                 {/* Browser Extensions */}
                 <div className="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-cyan-500" />
+                    <Globe className="w-4 h-4 text-cyan-500 flex-shrink-0" />
                     <h4 className="font-medium text-white">Browser Extensions</h4>
                   </div>
                   <p className="text-sm text-white/40 leading-relaxed">
@@ -135,7 +135,7 @@ export default function About() {
                 {/* Web Applications */}
                 <div className="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-primary-500" />
+                    <Layout className="w-4 h-4 text-primary-500 flex-shrink-0" />
                     <h4 className="font-medium text-white">Web Applications</h4>
                   </div>
                   <p className="text-sm text-white/40 leading-relaxed">
@@ -147,7 +147,7 @@ export default function About() {
                 {/* Mobile Apps */}
                 <div className="p-4 sm:p-5 rounded-xl bg-white/[0.03] border border-white/[0.05]">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-rose-500" />
+                    <Smartphone className="w-4 h-4 text-rose-500 flex-shrink-0" />
                     <h4 className="font-medium text-white">Mobile Apps</h4>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-white/40">Coming Soon</span>
                   </div>

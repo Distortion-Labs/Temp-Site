@@ -11,7 +11,10 @@ const ChromaticText = dynamic(() => import('./ChromaticText'), {
 })
 
 const ColorBends = dynamic(() => import('./ColorBends'), {
-  ssr: false
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-gradient-to-br from-purple-900/80 via-void to-cyan-900/30" />
+  )
 })
 
 export default function Hero() {

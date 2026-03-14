@@ -18,6 +18,8 @@ export default function SilkSection({ children }: { children: React.ReactNode })
         />
         {/* Top fade from hero */}
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[var(--void)] to-transparent pointer-events-none" />
+        {/* Bottom fade to next section */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--void)] to-transparent pointer-events-none" />
       </div>
 
       {/* Content scrolls over the Silk background */}

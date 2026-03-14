@@ -2,7 +2,7 @@
 
 /* eslint-disable react/no-unknown-property */
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, MutableRefObject } from 'react'
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, useState, MutableRefObject } from 'react'
 import { Color } from 'three'
 import type { Mesh } from 'three'
 
@@ -90,15 +90,14 @@ const SilkPlane = forwardRef<Mesh, SilkPlaneProps>(function SilkPlane({ uniforms
   }, [ref, viewport])
 
   useFrame((state, delta) => {
-    if (!visibleRef.current) {
-      // Still keep the loop alive but skip GPU work
-      state.gl.clear()
-      return
-    }
+    if (!visibleRef.current) return
+
     if (ref && 'current' in ref && ref.current) {
       const mat = ref.current.material as THREE.ShaderMaterial
       mat.uniforms.uTime.value += 0.1 * delta
     }
+
+    state.invalidate()
   })
 
   return (
@@ -130,6 +129,15 @@ export default function Silk({
   const meshRef = useRef<Mesh>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const visibleRef = useRef(true)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   useEffect(() => {
     const el = containerRef.current
@@ -154,9 +162,18 @@ export default function Silk({
     [speed, scale, noiseIntensity, color, rotation]
   )
 
+  if (prefersReducedMotion) {
+    return (
+      <div
+        ref={containerRef}
+        style={{ width: '100%', height: '100%', backgroundColor: color }}
+      />
+    )
+  }
+
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <Canvas dpr={[1, 1]} frameloop="always">
+      <Canvas dpr={[1, 1]} frameloop="demand">
         <SilkPlane ref={meshRef} uniforms={uniforms} visibleRef={visibleRef} />
       </Canvas>
     </div>

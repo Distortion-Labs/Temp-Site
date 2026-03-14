@@ -6,14 +6,14 @@ const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-outfit',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  weight: ['400', '500', '600', '700'],
 })
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-jakarta',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '600'],
 })
 
 const jetbrains = JetBrains_Mono({
@@ -32,12 +32,12 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'Distortion Labs | Software That Bends Reality',
-  description: 'We build browser extensions and apps that enhance how you interact with the digital world. Currently shipping Multi-Finder Pro.',
-  keywords: ['browser extensions', 'chrome extensions', 'productivity tools', 'multi-finder pro', 'software development'],
+  description: 'Free, open-source Chrome extensions and productivity tools. Multi-Finder Pro lets you search and highlight multiple terms on any webpage simultaneously.',
+  keywords: ['browser extensions', 'chrome extensions', 'productivity tools', 'multi-finder pro', 'multi search', 'highlight text', 'open source'],
   authors: [{ name: 'Distortion Labs' }],
   openGraph: {
     title: 'Distortion Labs | Software That Bends Reality',
-    description: 'Browser extensions and apps that enhance your digital experience.',
+    description: 'Free, open-source Chrome extensions and productivity tools by Distortion Labs.',
     type: 'website',
     locale: 'en_US',
     siteName: 'Distortion Labs',
