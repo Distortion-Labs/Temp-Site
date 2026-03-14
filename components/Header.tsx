@@ -15,10 +15,28 @@ const navLinks = [
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('')
+  const [scrollProgress, setScrollProgress] = useState(0)
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
+
+      // Scroll progress
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(docHeight > 0 ? window.scrollY / docHeight : 0)
+
+      // Active section detection
+      const sections = ['products', 'about', 'contact']
+      let current = ''
+      for (const id of sections) {
+        const el = document.getElementById(id)
+        if (el) {
+          const rect = el.getBoundingClientRect()
+          if (rect.top <= 150) current = id
+        }
+      }
+      setActiveSection(current)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
@@ -88,16 +106,19 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1 relative z-10">
-              {navLinks.map((link) => (
-                <button
-                  key={link.name}
-                  onClick={() => scrollToSection(link.href)}
-                  className="relative px-4 lg:px-5 py-2.5 text-sm font-medium text-white/60 hover:text-white transition-colors duration-300 group"
-                >
-                  {link.name}
-                  <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full group-hover:w-2/3 transition-all duration-300" />
-                </button>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.href.replace('#', '')
+                return (
+                  <button
+                    key={link.name}
+                    onClick={() => scrollToSection(link.href)}
+                    className={`relative px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors duration-300 group ${isActive ? 'text-white' : 'text-white/60 hover:text-white'}`}
+                  >
+                    {link.name}
+                    <span className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full transition-all duration-300 ${isActive ? 'w-2/3' : 'w-0 group-hover:w-2/3'}`} />
+                  </button>
+                )
+              })}
             </div>
 
             {/* Desktop CTA */}
@@ -144,6 +165,17 @@ export default function Header() {
           </nav>
         </div>
       </div>
+
+      {/* Scroll progress bar */}
+      {isScrolled && (
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/[0.03]">
+          <motion.div
+            className="h-full bg-gradient-to-r from-primary-500 to-cyan-500"
+            style={{ width: `${scrollProgress * 100}%` }}
+            transition={{ duration: 0.1 }}
+          />
+        </div>
+      )}
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>

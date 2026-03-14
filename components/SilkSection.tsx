@@ -13,7 +13,7 @@ export default function SilkSection({ children }: { children: React.ReactNode })
           speed={10.5}
           scale={0.7}
           color="#4f2b6e"
-          noiseIntensity={0}
+          noiseIntensity={0.8}
           rotation={3.3}
         />
         {/* Top fade from hero */}

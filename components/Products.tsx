@@ -29,8 +29,9 @@ const features = [
 export default function Products() {
   return (
     <section id="products" className="section-space relative overflow-hidden">
-      {/* Background accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] orb orb-purple opacity-20 pointer-events-none" />
+      {/* Background accents */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] orb orb-purple opacity-25 pointer-events-none animate-float-slow" />
+      <div className="absolute top-[20%] right-[10%] w-[300px] h-[300px] orb orb-cyan opacity-15 pointer-events-none animate-float-slower" />
 
       <div className="container-main relative">
         {/* Section header */}
@@ -60,7 +61,7 @@ export default function Products() {
           transition={{ duration: 0.6 }}
           className="relative max-w-4xl mx-auto"
         >
-          <div className="glass-card rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 md:p-10 overflow-hidden">
+          <div className="glass-card product-card-glow rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 md:p-10 overflow-hidden">
             {/* Gradient accent */}
             <div className="absolute -top-32 -right-32 w-64 h-64 orb orb-cyan opacity-30" />
             <div className="absolute -bottom-32 -left-32 w-64 h-64 orb orb-purple opacity-20" />
@@ -110,36 +111,40 @@ export default function Products() {
                   <div className="h-3 bg-white/[0.04] rounded w-4/5" />
                   <div className="flex gap-1 items-center">
                     <div className="h-3 bg-white/[0.04] rounded w-16" />
-                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-cyan-500/20 text-cyan-400 font-mono">match 1</span>
+                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-cyan-500/20 text-cyan-400 font-mono animate-pulse">match 1</span>
                     <div className="h-3 bg-white/[0.04] rounded w-24" />
-                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-primary-500/20 text-primary-400 font-mono">match 2</span>
+                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-primary-500/20 text-primary-400 font-mono animate-pulse [animation-delay:0.5s]">match 2</span>
                     <div className="h-3 bg-white/[0.04] rounded w-12" />
                   </div>
                   <div className="h-3 bg-white/[0.04] rounded w-11/12" />
                   <div className="flex gap-1 items-center">
                     <div className="h-3 bg-white/[0.04] rounded w-20" />
-                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-rose-500/20 text-rose-400 font-mono">match 3</span>
+                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-rose-500/20 text-rose-400 font-mono animate-pulse [animation-delay:1s]">match 3</span>
                     <div className="h-3 bg-white/[0.04] rounded w-32" />
                   </div>
                   <div className="h-3 bg-white/[0.04] rounded w-3/4" />
                 </div>
               </div>
 
-              {/* Features grid - no staggered delays for faster load */}
+              {/* Features grid with staggered reveal */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
-                {features.map((feature) => (
-                  <div
+                {features.map((feature, index) => (
+                  <motion.div
                     key={feature.title}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]"
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1, duration: 0.4 }}
+                    className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-5 h-5 text-cyan-400" />
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0 group-hover:from-cyan-500/20 group-hover:to-primary-500/10 transition-all duration-300">
+                      <feature.icon className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <div>
                       <h4 className="font-medium text-white mb-1">{feature.title}</h4>
                       <p className="text-sm text-white/40">{feature.description}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
