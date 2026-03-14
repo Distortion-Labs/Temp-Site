@@ -31,7 +31,7 @@ export default function Hero() {
           speed={0.47}
           mouseInfluence={1.5}
           parallax={1.1}
-          noise={0.51}
+          noise={0}
           colors={['#6b21a8', '#0ea5e9', '#e11d48', '#1e1b4b']}
           transparent={false}
         />

@@ -66,7 +66,10 @@ void main() {
                                    0.02 * tOffset) +
                            sin(20.0 * (tex.x + tex.y - 0.1 * tOffset)));
 
-  vec4 col = vec4(uColor, 1.0) * vec4(pattern) - rnd / 15.0 * uNoiseIntensity;
+  vec4 col = vec4(uColor, 1.0) * vec4(pattern);
+  if (uNoiseIntensity > 0.001) {
+    col -= rnd / 15.0 * uNoiseIntensity;
+  }
   col.a = 1.0;
   gl_FragColor = col;
 }
@@ -153,7 +156,7 @@ export default function Silk({
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <Canvas dpr={[1, 1.5]} frameloop="always">
+      <Canvas dpr={[1, 1]} frameloop="always">
         <SilkPlane ref={meshRef} uniforms={uniforms} visibleRef={visibleRef} />
       </Canvas>
     </div>

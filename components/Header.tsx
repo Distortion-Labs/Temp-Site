@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Zap } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import GlassSurface from './GlassSurface'
 
 const navLinks = [
@@ -80,9 +81,15 @@ export default function Header() {
               }}
               className="flex items-center gap-2.5 sm:gap-3 group relative z-10"
             >
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-cyan-500 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-glow-purple">
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 group-hover:scale-105 transition-transform duration-300">
+                <Image
+                  src="/logo.png"
+                  alt="Distortion Labs"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                  priority
+                />
               </div>
               <span className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight">
                 Distortion<span className="text-primary-400">Labs</span>
