@@ -304,7 +304,7 @@ export default function ColorBends({
 
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
-      <Canvas dpr={[1, 1.5]} frameloop="demand">
+      <Canvas dpr={[1, 1]} frameloop="demand">
         <ColorBendsPlane
           ref={meshRef}
           uniforms={uniforms}
