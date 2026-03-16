@@ -26,20 +26,8 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative py-12 sm:py-16 safe-bottom overflow-hidden">
-      {/* Static gradient background with grain */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1a0a2e] via-[#0d0618] to-[var(--void)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_80%,rgba(79,43,110,0.25)_0%,transparent_70%)]" />
-      <div
-        className="absolute inset-0 opacity-[0.035]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")`,
-        }}
-      />
-      {/* Top fade into previous section */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[var(--void)] to-transparent pointer-events-none" />
-
-      <div className="container-main relative">
+    <footer className="relative py-12 sm:py-16 safe-bottom">
+      <div className="container-main">
         {/* Main footer content */}
         <div className="flex flex-col items-center text-center">
           {/* Logo */}

@@ -61,7 +61,7 @@ export default function Products() {
           transition={{ duration: 0.6 }}
           className="relative max-w-4xl mx-auto"
         >
-          <div className="glass-card product-card-glow rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 md:p-10 overflow-hidden">
+          <div className="glass-card rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 md:p-10 overflow-hidden">
             {/* Gradient accent */}
             <div className="absolute -top-32 -right-32 w-64 h-64 orb orb-cyan opacity-30" />
             <div className="absolute -bottom-32 -left-32 w-64 h-64 orb orb-purple opacity-20" />
@@ -135,10 +135,10 @@ export default function Products() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, duration: 0.4 }}
-                    className="group flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-300"
+                    className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0 group-hover:from-cyan-500/20 group-hover:to-primary-500/10 transition-all duration-300">
-                      <feature.icon className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
+                      <feature.icon className="w-5 h-5 text-cyan-400" />
                     </div>
                     <div>
                       <h4 className="font-medium text-white mb-1">{feature.title}</h4>
