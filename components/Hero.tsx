@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowDown, Chrome, Sparkles, Code2 } from 'lucide-react'
+import { ArrowDown, Chrome } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // Dynamic imports to prevent SSR issues with canvas/WebGL
@@ -40,30 +40,8 @@ export default function Hero() {
         />
       </div>
 
-      {/* Floating glass elements - desktop only */}
-      <div className="absolute top-[20%] left-[8%] hidden lg:block animate-fade-in-delay">
-        <div className="w-16 h-16 glass-card rounded-2xl flex items-center justify-center animate-float">
-          <Chrome className="w-7 h-7 text-cyan-400" />
-        </div>
-      </div>
-
-      <div className="absolute bottom-[25%] right-[10%] hidden lg:block animate-fade-in-delay-2">
-        <div className="w-14 h-14 glass-card rounded-xl flex items-center justify-center animate-float-alt">
-          <Sparkles className="w-6 h-6 text-primary-400" />
-        </div>
-      </div>
-
-      <div className="absolute top-[35%] right-[5%] hidden xl:block animate-fade-in-delay-2">
-        <div className="w-12 h-12 glass-subtle rounded-lg flex items-center justify-center animate-float opacity-60">
-          <Code2 className="w-5 h-5 text-white/40" />
-        </div>
-      </div>
-
-      <div className="absolute bottom-[35%] left-[5%] hidden xl:block animate-fade-in-delay">
-        <div className="w-10 h-10 glass-subtle rounded-lg flex items-center justify-center animate-float-alt opacity-50">
-          <div className="w-3 h-3 rounded-full bg-gradient-to-br from-cyan-400 to-primary-500" />
-        </div>
-      </div>
+      {/* Darkening overlay to improve text readability */}
+      <div className="absolute inset-0 bg-[#1a1025]/40" />
 
       {/* Main content - fast load with minimal delays */}
       <div className="relative z-10 max-w-4xl mx-auto text-center pt-20 sm:pt-24 animate-fade-in-up">
