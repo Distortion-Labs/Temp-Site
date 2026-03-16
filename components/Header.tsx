@@ -71,7 +71,7 @@ export default function Header() {
     >
       <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
         <div className="container-main">
-          <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500">
+          <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500 overflow-hidden">
             {/* Glass backdrop - CSS-based for performance */}
             {isScrolled && (
               <div
@@ -162,20 +162,20 @@ export default function Header() {
                 )}
               </AnimatePresence>
             </button>
+
+            {/* Scroll progress bar - bottom of nav */}
+            {isScrolled && (
+              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/[0.03] z-10">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-primary-500 to-cyan-500"
+                  style={{ width: `${scrollProgress * 100}%` }}
+                  transition={{ duration: 0.1 }}
+                />
+              </div>
+            )}
           </nav>
         </div>
       </div>
-
-      {/* Scroll progress bar */}
-      {isScrolled && (
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/[0.03]">
-          <motion.div
-            className="h-full bg-gradient-to-r from-primary-500 to-cyan-500"
-            style={{ width: `${scrollProgress * 100}%` }}
-            transition={{ duration: 0.1 }}
-          />
-        </div>
-      )}
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
