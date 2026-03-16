@@ -40,6 +40,9 @@ export default function Hero() {
         />
       </div>
 
+      {/* Darkening overlay to improve text readability */}
+      <div className="absolute inset-0 bg-[#1a1025]/40" />
+
       {/* Main content - fast load with minimal delays */}
       <div className="relative z-10 max-w-4xl mx-auto text-center pt-20 sm:pt-24 animate-fade-in-up">
         {/* Badge */}
