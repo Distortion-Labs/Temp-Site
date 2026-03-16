@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Code2, Lightbulb, Heart, Rocket, Globe, Layout, Smartphone } from 'lucide-react'
+import { Code2, Lightbulb, Rocket, Globe, Layout, Smartphone } from 'lucide-react'
 
 const principles = [
   {
@@ -13,11 +13,6 @@ const principles = [
     icon: Lightbulb,
     title: 'User First',
     description: 'Every feature starts with a real problem that needs solving.',
-  },
-  {
-    icon: Heart,
-    title: 'Open Source',
-    description: 'We believe in transparency and giving back to the community.',
   },
   {
     icon: Rocket,
@@ -85,7 +80,7 @@ export default function About() {
             </div>
 
             {/* Principles with staggered reveal */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               {principles.map((principle, index) => (
                 <motion.div
                   key={principle.title}
