@@ -1,31 +1,10 @@
-'use client'
+import { products } from '@/lib/products'
+import PipelineTeaser from './PipelineTeaser'
+import ProductCard from './ProductCard'
+import Reveal from './Reveal'
+import SectionHeading from './SectionHeading'
 
-import { motion } from 'framer-motion'
-import { Search, Highlighter, Layers, Zap, ExternalLink, Chrome } from 'lucide-react'
-
-const features = [
-  {
-    icon: Search,
-    title: 'Multi-term Search',
-    description: 'Find multiple words or phrases simultaneously on any webpage.',
-  },
-  {
-    icon: Highlighter,
-    title: 'Smart Highlighting',
-    description: 'Each search term gets its own distinct color for easy identification.',
-  },
-  {
-    icon: Layers,
-    title: 'Persistent Results',
-    description: 'Your highlights stay visible as you scroll through the page.',
-  },
-  {
-    icon: Zap,
-    title: 'Lightning Fast',
-    description: 'Instant results with zero lag, even on content-heavy pages.',
-  },
-]
-
+/** Home page products section. */
 export default function Products() {
   return (
     <section id="products" className="section-space relative overflow-hidden">
@@ -34,168 +13,21 @@ export default function Products() {
       <div className="absolute top-[20%] right-[10%] w-[300px] h-[300px] orb orb-cyan opacity-15 pointer-events-none animate-float-slower" />
 
       <div className="container-main relative">
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12 sm:mb-16"
-        >
-          <span className="inline-block px-3 py-1.5 mb-4 text-xs sm:text-sm font-medium text-cyan-400 rounded-full glass-subtle">
-            Our Products
-          </span>
-          <h2 className="font-display text-display-md font-bold text-white mb-4 text-balance">
-            Tools we&apos;re building
-          </h2>
-          <p className="text-base sm:text-lg text-white/50 max-w-xl mx-auto">
-            We focus on creating software that solves real problems. Here&apos;s what we&apos;re working on.
-          </p>
-        </motion.div>
+        <Reveal className="mb-12 sm:mb-16">
+          <SectionHeading
+            eyebrow="Our Products"
+            title={<>Tools we&apos;re building</>}
+            description={<>We focus on creating software that solves real problems. Here&apos;s what we&apos;re working on.</>}
+          />
+        </Reveal>
 
-        {/* Main product card - Multi-Finder Pro */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.6 }}
-          className="relative max-w-4xl mx-auto"
-        >
-          <div className="glass-card rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 md:p-10 overflow-hidden">
-            {/* Gradient accent */}
-            <div className="absolute -top-32 -right-32 w-64 h-64 orb orb-cyan opacity-30" />
-            <div className="absolute -bottom-32 -left-32 w-64 h-64 orb orb-purple opacity-20" />
+        <div className="space-y-8 sm:space-y-12">
+          {products.map((product) => (
+            <ProductCard key={product.slug} product={product} />
+          ))}
+        </div>
 
-            <div className="relative">
-              {/* Product header */}
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-primary-600 flex items-center justify-center shadow-glow-cyan">
-                    <Search className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-display text-xl sm:text-2xl font-bold text-white">
-                      Multi-Finder Pro
-                    </h3>
-                    <p className="text-sm text-white/50">Chrome Extension</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 text-xs font-medium text-emerald-400 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                    Available Now
-                  </span>
-                </div>
-              </div>
-
-              {/* Description */}
-              <p className="text-base sm:text-lg text-white/60 mb-8 max-w-2xl leading-relaxed">
-                Find and highlight multiple words on any webpage simultaneously.
-                Perfect for researchers, students, and anyone who needs to quickly
-                locate multiple terms in long documents.
-              </p>
-
-              {/* Product preview mockup */}
-              <div className="mb-8 rounded-xl overflow-hidden border border-white/[0.08]">
-                <div className="bg-white/[0.03] px-4 py-2.5 flex items-center gap-2 border-b border-white/[0.06]">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                  </div>
-                  <div className="flex-1 mx-4 h-6 rounded bg-white/[0.04] flex items-center px-3">
-                    <span className="text-[10px] text-white/20 font-mono">example.com</span>
-                  </div>
-                </div>
-                <div className="p-6 sm:p-8 bg-white/[0.02] space-y-3">
-                  <div className="h-3 bg-white/[0.04] rounded w-full" />
-                  <div className="h-3 bg-white/[0.04] rounded w-4/5" />
-                  <div className="flex gap-1 items-center">
-                    <div className="h-3 bg-white/[0.04] rounded w-16" />
-                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-cyan-500/20 text-cyan-400 font-mono animate-pulse">match 1</span>
-                    <div className="h-3 bg-white/[0.04] rounded w-24" />
-                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-primary-500/20 text-primary-400 font-mono animate-pulse [animation-delay:0.5s]">match 2</span>
-                    <div className="h-3 bg-white/[0.04] rounded w-12" />
-                  </div>
-                  <div className="h-3 bg-white/[0.04] rounded w-11/12" />
-                  <div className="flex gap-1 items-center">
-                    <div className="h-3 bg-white/[0.04] rounded w-20" />
-                    <span className="px-1.5 py-0.5 text-[9px] rounded bg-rose-500/20 text-rose-400 font-mono animate-pulse [animation-delay:1s]">match 3</span>
-                    <div className="h-3 bg-white/[0.04] rounded w-32" />
-                  </div>
-                  <div className="h-3 bg-white/[0.04] rounded w-3/4" />
-                </div>
-              </div>
-
-              {/* Features grid with staggered reveal */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-8">
-                {features.map((feature, index) => (
-                  <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1, duration: 0.4 }}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.05]"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center flex-shrink-0">
-                      <feature.icon className="w-5 h-5 text-cyan-400" />
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-white mb-1">{feature.title}</h4>
-                      <p className="text-sm text-white/40">{feature.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                <a
-                  href="https://github.com/Sunu03/multi-finder-pro"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary px-6 py-3.5 text-sm sm:text-base font-medium text-white rounded-xl flex items-center justify-center gap-2"
-                >
-                  <Chrome className="w-5 h-5" />
-                  <span className="relative z-10">Add to Chrome</span>
-                  <ExternalLink className="w-4 h-4 relative z-10" />
-                </a>
-                <a
-                  href="https://github.com/Sunu03/multi-finder-pro"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-glass px-6 py-3.5 text-sm sm:text-base font-medium text-white/70 rounded-xl flex items-center justify-center gap-2"
-                >
-                  View on GitHub
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Coming soon teaser */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="mt-8 sm:mt-12 max-w-4xl mx-auto"
-        >
-          <div className="glass-subtle rounded-2xl p-6 sm:p-8 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-medium text-primary-400 bg-primary-500/10 rounded-full border border-primary-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse" />
-              In Development
-            </div>
-            <h4 className="font-display text-lg sm:text-xl font-semibold text-white mb-2">
-              More tools in the pipeline
-            </h4>
-            <p className="text-sm sm:text-base text-white/40 max-w-md mx-auto">
-              We&apos;re working on new productivity extensions — tab management,
-              smart bookmarks, and more. Follow us on GitHub for updates.
-            </p>
-          </div>
-        </motion.div>
+        <PipelineTeaser />
       </div>
     </section>
   )

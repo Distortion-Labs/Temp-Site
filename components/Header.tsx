@@ -5,17 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-
-const navLinks = [
-  { name: 'Products', href: '#products' },
-  { name: 'About', href: '#about' },
-  { name: 'Contact', href: '#contact' },
-]
+import { usePathname } from 'next/navigation'
+import { mainNav } from '@/lib/site'
 
 export default function Header() {
+  const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('')
   const [scrollProgress, setScrollProgress] = useState(0)
 
   useEffect(() => {
@@ -25,18 +21,6 @@ export default function Header() {
       // Scroll progress
       const docHeight = document.documentElement.scrollHeight - window.innerHeight
       setScrollProgress(docHeight > 0 ? window.scrollY / docHeight : 0)
-
-      // Active section detection
-      const sections = ['products', 'about', 'contact']
-      let current = ''
-      for (const id of sections) {
-        const el = document.getElementById(id)
-        if (el) {
-          const rect = el.getBoundingClientRect()
-          if (rect.top <= 150) current = id
-        }
-      }
-      setActiveSection(current)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
@@ -54,13 +38,8 @@ export default function Header() {
     }
   }, [isMobileMenuOpen])
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-    setIsMobileMenuOpen(false)
-  }
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
+  const closeMenu = () => setIsMobileMenuOpen(false)
 
   return (
     <motion.header
@@ -71,7 +50,10 @@ export default function Header() {
     >
       <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
         <div className="container-main">
-          <nav className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500 overflow-hidden">
+          <nav
+            aria-label="Main"
+            className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500 overflow-hidden"
+          >
             {/* Glass backdrop - CSS-based for performance */}
             {isScrolled && (
               <div
@@ -84,8 +66,11 @@ export default function Header() {
             <Link
               href="/"
               onClick={(e) => {
-                e.preventDefault()
-                window.scrollTo({ top: 0, behavior: 'smooth' })
+                closeMenu()
+                if (pathname === '/') {
+                  e.preventDefault()
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }
               }}
               className="flex items-center gap-2.5 sm:gap-3 group relative z-10"
             >
@@ -96,7 +81,7 @@ export default function Header() {
                   width={40}
                   height={40}
                   className="w-full h-full object-contain"
-                  priority
+                  preload
                 />
               </div>
               <span className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight">
@@ -106,29 +91,30 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1 relative z-10">
-              {navLinks.map((link) => {
-                const isActive = activeSection === link.href.replace('#', '')
+              {mainNav.map((link) => {
+                const active = isActive(link.href)
                 return (
-                  <button
+                  <Link
                     key={link.name}
-                    onClick={() => scrollToSection(link.href)}
-                    className={`relative px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors duration-300 group ${isActive ? 'text-white' : 'text-white/60 hover:text-white'}`}
+                    href={link.href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`relative px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors duration-300 group ${active ? 'text-white' : 'text-white/60 hover:text-white'}`}
                   >
                     {link.name}
-                    <span className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full transition-all duration-300 ${isActive ? 'w-2/3' : 'w-0 group-hover:w-2/3'}`} />
-                  </button>
+                    <span className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full transition-all duration-300 ${active ? 'w-2/3' : 'w-0 group-hover:w-2/3'}`} />
+                  </Link>
                 )
               })}
             </div>
 
             {/* Desktop CTA */}
             <div className="hidden md:block relative z-10">
-              <button
-                onClick={() => scrollToSection('#products')}
-                className="btn-glass px-5 lg:px-6 py-2.5 text-sm font-medium text-white rounded-xl cursor-pointer hover:scale-105 transition-transform duration-300"
+              <Link
+                href="/products"
+                className="inline-block btn-glass px-5 lg:px-6 py-2.5 text-sm font-medium text-white rounded-xl hover:scale-105 transition-transform duration-300"
               >
                 View Products
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Menu Button */}
@@ -137,6 +123,7 @@ export default function Header() {
               className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl glass text-white z-10"
               aria-label="Toggle menu"
               aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <AnimatePresence mode="wait">
                 {isMobileMenuOpen ? (
@@ -188,11 +175,12 @@ export default function Header() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="fixed inset-0 bg-void/80 backdrop-blur-sm md:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={closeMenu}
             />
 
             {/* Menu Panel */}
             <motion.div
+              id="mobile-menu"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -200,17 +188,22 @@ export default function Header() {
               className="md:hidden absolute top-full left-0 right-0 px-5 pb-5"
             >
               <div className="glass-frosted rounded-2xl p-2 mt-2">
-                {navLinks.map((link, index) => (
-                  <motion.button
+                {mainNav.map((link, index) => (
+                  <motion.div
                     key={link.name}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 + 0.1 }}
-                    onClick={() => scrollToSection(link.href)}
-                    className="w-full px-4 py-4 text-left text-base font-medium text-white/80 hover:text-white active:bg-white/5 rounded-xl transition-colors duration-200"
                   >
-                    {link.name}
-                  </motion.button>
+                    <Link
+                      href={link.href}
+                      onClick={closeMenu}
+                      aria-current={isActive(link.href) ? 'page' : undefined}
+                      className={`block w-full px-4 py-4 text-left text-base font-medium active:bg-white/5 rounded-xl transition-colors duration-200 ${isActive(link.href) ? 'text-white' : 'text-white/80 hover:text-white'}`}
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
                 ))}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -218,12 +211,13 @@ export default function Header() {
                   transition={{ delay: 0.25 }}
                   className="p-2 pt-0"
                 >
-                  <button
-                    onClick={() => scrollToSection('#products')}
-                    className="w-full btn-glass px-4 py-4 text-center text-base font-medium text-white rounded-xl cursor-pointer"
+                  <Link
+                    href="/products"
+                    onClick={closeMenu}
+                    className="block w-full btn-glass px-4 py-4 text-center text-base font-medium text-white rounded-xl"
                   >
                     View Products
-                  </button>
+                  </Link>
                 </motion.div>
               </div>
             </motion.div>
