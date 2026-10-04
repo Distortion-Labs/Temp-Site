@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { useIsClient } from '@/lib/hooks'
 
 interface DistortedTextProps {
   children: string
@@ -8,7 +9,7 @@ interface DistortedTextProps {
 }
 
 export default function DistortedText({ children, className = '' }: DistortedTextProps) {
-  const [isClient, setIsClient] = useState(false)
+  const isClient = useIsClient()
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLSpanElement>(null)
   const textRef = useRef<SVGTextElement>(null)
@@ -16,10 +17,6 @@ export default function DistortedText({ children, className = '' }: DistortedTex
   const [fontSize, setFontSize] = useState(84)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const [isHovering, setIsHovering] = useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
 
   // Get the computed font size from parent and scale it up
   useEffect(() => {
