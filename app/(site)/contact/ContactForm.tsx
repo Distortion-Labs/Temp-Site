@@ -1,14 +1,14 @@
 'use client'
 
 import { useActionState, useState } from 'react'
-import { CheckCircle, Loader2, Send } from 'lucide-react'
-import { contactLimits } from '@/lib/contact'
+import { ArrowRight, Check, Loader2 } from 'lucide-react'
+import { contactLimits, contactTopics } from '@/lib/contact'
 import { sendContactMessage, type ContactFormState } from './actions'
 
 const initialState: ContactFormState = { status: 'idle' }
 
-const inputClass =
-  'w-full rounded-xl bg-white/[0.04] border border-white/10 px-4 py-3 text-sm sm:text-base text-white placeholder:text-white/25 outline-none transition-colors duration-200 hover:border-white/15 focus:border-primary-400/60 focus:bg-white/[0.06] aria-[invalid=true]:border-rose-400/60'
+const fieldClass =
+  'w-full border-0 border-b border-line-strong bg-transparent px-0 py-3 text-lead outline-none transition-colors placeholder:text-muted/60 hover:border-ink/50 focus:border-ink aria-[invalid=true]:border-[#b42318]'
 
 export default function ContactForm() {
   // Remounting the inner form resets its action state for "send another message".
@@ -21,19 +21,13 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
 
   if (state.status === 'success') {
     return (
-      <div className="glass-card rounded-2xl sm:rounded-3xl p-8 sm:p-10 text-center" role="status">
-        <div className="inline-flex items-center justify-center w-14 h-14 mb-5 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600">
-          <CheckCircle className="w-7 h-7 text-white" />
-        </div>
-        <h2 className="font-display text-xl sm:text-2xl font-bold text-white mb-2">Message sent</h2>
-        <p className="text-sm sm:text-base text-white/50 mb-6">
-          Thanks for reaching out — we typically respond within 24-48 hours.
-        </p>
-        <button
-          type="button"
-          onClick={onReset}
-          className="btn-glass px-5 py-2.5 text-sm font-medium text-white/80 rounded-xl"
-        >
+      <div className="border-t border-ink pt-8" role="status">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-ink text-paper">
+          <Check className="h-5 w-5" strokeWidth={2} />
+        </span>
+        <h2 className="mt-6 text-heading font-medium">Message sent.</h2>
+        <p className="mt-2 max-w-[40ch] text-small text-muted">Thanks for writing — we typically reply within 24–48 hours.</p>
+        <button type="button" onClick={onReset} className="btn mt-8">
           Send another message
         </button>
       </div>
@@ -41,15 +35,25 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
   }
 
   const errors = state.fieldErrors ?? {}
+  const topic = state.values?.topic ?? contactTopics[0]
 
   return (
-    <form action={formAction} noValidate className="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 space-y-5">
-      <div>
-        <h2 className="font-display text-lg sm:text-xl font-semibold text-white mb-1">Send us a message</h2>
-        <p className="text-sm text-white/40">All fields are required.</p>
-      </div>
+    <form action={formAction} noValidate className="relative space-y-10 border-t border-ink pt-8">
+      <fieldset>
+        <legend className="label mb-4 text-muted">What&apos;s it about?</legend>
+        <div className="flex flex-wrap gap-2">
+          {contactTopics.map((t) => (
+            <label key={t} className="cursor-pointer">
+              <input type="radio" name="topic" value={t} defaultChecked={t === topic} className="peer sr-only" />
+              <span className="inline-flex min-h-[2.5rem] items-center rounded-full border border-line-strong px-4 text-small transition-colors hover:border-ink peer-checked:border-ink peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
+                {t}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
-      <div className="grid sm:grid-cols-2 gap-5">
+      <div className="grid gap-10 sm:grid-cols-2 sm:gap-6">
         <Field label="Name" id="name" error={errors.name}>
           <input
             id="name"
@@ -59,10 +63,9 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
             required
             maxLength={contactLimits.name}
             defaultValue={state.values?.name}
-            placeholder="Ada Lovelace"
             aria-invalid={errors.name ? true : undefined}
             aria-describedby={errors.name ? 'name-error' : undefined}
-            className={inputClass}
+            className={fieldClass}
           />
         </Field>
         <Field label="Email" id="email" error={errors.email}>
@@ -74,10 +77,9 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
             required
             maxLength={contactLimits.email}
             defaultValue={state.values?.email}
-            placeholder="you@example.com"
             aria-invalid={errors.email ? true : undefined}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            className={inputClass}
+            className={fieldClass}
           />
         </Field>
       </div>
@@ -87,64 +89,46 @@ function ContactFormInner({ onReset }: { onReset: () => void }) {
           id="message"
           name="message"
           required
-          rows={6}
+          rows={5}
           minLength={contactLimits.messageMin}
           maxLength={contactLimits.messageMax}
           defaultValue={state.values?.message}
-          placeholder="Tell us about your idea, project or question…"
+          placeholder="A few lines about what you're making, and when."
           aria-invalid={errors.message ? true : undefined}
           aria-describedby={errors.message ? 'message-error' : undefined}
-          className={`${inputClass} resize-y min-h-[140px]`}
+          className={`${fieldClass} min-h-[9rem] resize-y`}
         />
       </Field>
 
       {/* Honeypot for bots; hidden from people and assistive tech */}
-      <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+      <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
         <label htmlFor="company">Company</label>
         <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
       {state.status === 'error' && state.message && (
-        <p role="alert" className="text-sm text-rose-300 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3">
+        <p role="alert" className="border-l-2 border-[#b42318] pl-4 text-small text-[#b42318]">
           {state.message}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-primary px-6 sm:px-8 py-3.5 text-sm sm:text-base font-medium text-white rounded-xl disabled:opacity-70 disabled:cursor-wait"
-      >
-        {isPending ? (
-          <Loader2 className="w-4 h-4 relative z-10 animate-spin" />
-        ) : (
-          <Send className="w-4 h-4 relative z-10" />
-        )}
-        <span className="relative z-10">{isPending ? 'Sending…' : 'Send message'}</span>
+      <button type="submit" disabled={isPending} className="btn btn-solid group !min-h-[3.25rem] !px-7 disabled:cursor-wait disabled:opacity-70">
+        {isPending ? 'Sending…' : 'Send message'}
+        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="nudge-x h-4 w-4" strokeWidth={1.75} />}
       </button>
     </form>
   )
 }
 
-function Field({
-  label,
-  id,
-  error,
-  children,
-}: {
-  label: string
-  id: string
-  error?: string
-  children: React.ReactNode
-}) {
+function Field({ label, id, error, children }: { label: string; id: string; error?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-white/70 mb-2">
+      <label htmlFor={id} className="label block text-muted">
         {label}
       </label>
       {children}
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 text-xs sm:text-sm text-rose-300">
+        <p id={`${id}-error`} className="mt-2 text-small text-[#b42318]">
           {error}
         </p>
       )}

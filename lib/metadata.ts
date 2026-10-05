@@ -23,7 +23,7 @@ const shareImage = {
  * `twitter` objects, so every page gets the full set here instead of relying on the root layout.
  */
 export function pageMetadata({ title, description = siteConfig.description, path }: PageMetadataOptions): Metadata {
-  const fullTitle = title ? `${title} | ${siteConfig.name}` : `${siteConfig.name} | ${siteConfig.tagline}`
+  const fullTitle = title ? `${title} — ${siteConfig.name}` : `${siteConfig.name} — ${siteConfig.tagline}`
 
   return {
     title: { absolute: fullTitle },

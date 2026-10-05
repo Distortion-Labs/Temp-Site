@@ -16,10 +16,3 @@ export function usePrefersReducedMotion() {
     () => false
   )
 }
-
-export const subscribeNoop = () => () => {}
-
-/** `true` once rendering on the client; `false` on the server and during hydration. */
-export function useIsClient() {
-  return useSyncExternalStore(subscribeNoop, () => true, () => false)
-}

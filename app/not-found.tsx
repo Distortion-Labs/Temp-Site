@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import GradientSection from '@/components/GradientSection'
+import Mark from '@/components/Mark'
 
 export const metadata: Metadata = {
-  title: 'Page Not Found',
+  title: 'Not found',
 }
 
 // Rendered outside the (site) layout, so it brings its own header and footer.
@@ -14,35 +13,32 @@ export default function NotFound() {
   return (
     <>
       <Header />
-      <main id="main" className="relative">
-        <GradientSection>
-          <section className="relative min-h-[75dvh] flex items-center pt-32 pb-20">
-            <div className="container-main text-center animate-fade-in-up">
-              <p className="font-mono text-sm sm:text-base text-gradient mb-4">404</p>
-              <h1 className="font-display text-display-lg font-bold text-white mb-4 text-balance">
-                This page bent out of reality
-              </h1>
-              <p className="text-base sm:text-lg text-white/50 max-w-md mx-auto mb-8 sm:mb-10">
-                The page you&apos;re looking for doesn&apos;t exist or has moved.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-                <Link
-                  href="/"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 btn-primary px-6 sm:px-8 py-3.5 text-sm sm:text-base font-medium text-white rounded-xl sm:rounded-2xl"
-                >
-                  <ArrowLeft className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10">Back to home</span>
-                </Link>
-                <Link
-                  href="/products"
-                  className="w-full sm:w-auto btn-glass px-6 sm:px-8 py-3.5 text-sm sm:text-base font-medium text-white/80 text-center rounded-xl sm:rounded-2xl"
-                >
-                  View products
-                </Link>
-              </div>
+      <main id="main" className="container-site flex min-h-[80dvh] flex-col justify-center pb-24 pt-[calc(var(--header-h)+4rem)]">
+        <div className="grid items-center gap-12 sm:grid-cols-12 sm:gap-6">
+          <div className="sm:col-span-7">
+            <p className="label animate-rise text-muted">(404)</p>
+            <h1
+              className="mt-6 animate-rise text-display font-medium text-balance [animation-delay:80ms]"
+              style={{ fontVariationSettings: "'wdth' 112" }}
+            >
+              This page is out of focus.
+            </h1>
+            <p className="mt-6 max-w-[38ch] animate-rise text-lead text-muted [animation-delay:160ms]">
+              It may have moved, or never existed. The rest of the site is sharp.
+            </p>
+            <div className="mt-10 flex animate-rise flex-wrap gap-3 [animation-delay:240ms]">
+              <Link href="/" className="btn btn-solid">
+                Back to home
+              </Link>
+              <Link href="/work" className="btn">
+                See the work
+              </Link>
             </div>
-          </section>
-        </GradientSection>
+          </div>
+          <div className="hidden sm:col-span-4 sm:col-start-9 sm:block">
+            <Mark className="mark-open w-full blur-[6px]" />
+          </div>
+        </div>
       </main>
       <Footer />
     </>

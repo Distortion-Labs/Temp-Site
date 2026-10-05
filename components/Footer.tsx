@@ -1,78 +1,88 @@
-import { Github, Twitter } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { mainNav, siteConfig } from '@/lib/site'
-
-const footerLinks = [...mainNav, { name: 'Privacy', href: '/privacy' }]
-
-const socialLinks = [
-  { name: 'GitHub', icon: Github, href: siteConfig.links.github },
-  { name: 'Twitter', icon: Twitter, href: siteConfig.links.twitter },
-]
+import { projects } from '@/lib/work'
+import FooterCta from './FooterCta'
+import Mark from './Mark'
 
 export default function Footer() {
+  const year = new Date().getFullYear()
+
   return (
-    // Background continues the bottom edge of GradientSection so the two read as one surface
-    <footer className="relative py-12 sm:py-16 safe-bottom bg-[#0d0618]">
-      <div className="absolute inset-0 bg-grain pointer-events-none" />
+    <footer className="relative overflow-hidden bg-night text-paper">
+      <FooterCta />
 
-      <div className="container-main relative">
-        {/* Main footer content */}
-        <div className="flex flex-col items-center text-center">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 mb-6 group">
-            <div className="relative w-9 h-9 group-hover:scale-105 transition-transform duration-300">
-              <Image
-                src="/logo.png"
-                alt="Distortion Labs"
-                width={36}
-                height={36}
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <span className="font-display text-lg font-semibold text-white tracking-tight">
-              Distortion<span className="text-primary-400">Labs</span>
-            </span>
-          </Link>
-
-          {/* Navigation */}
-          <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 mb-6">
-            {footerLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm text-white/40 hover:text-white transition-colors duration-200"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Social links */}
-          <div className="flex items-center gap-3 mb-8">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-xl glass-subtle flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 hover:border-white/15 hover:scale-110 transition-all duration-300"
-                aria-label={social.name}
-              >
-                <social.icon className="w-5 h-5" />
-              </a>
-            ))}
+      <div className="container-site">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 border-t border-night-line py-12 sm:grid-cols-4 lg:grid-cols-12">
+          <div className="col-span-2 lg:col-span-4">
+            <Link href="/" className="group inline-flex items-center gap-3" aria-label={`${siteConfig.name} — home`}>
+              <Mark className="h-8 w-8" />
+              <span className="text-[15px] font-semibold tracking-[-0.015em]" style={{ fontVariationSettings: "'wdth' 112" }}>
+                Distortion Labs
+              </span>
+            </Link>
+            <p className="mt-5 max-w-[30ch] text-small text-night-muted">{siteConfig.description}</p>
           </div>
 
-          {/* Divider */}
-          <div className="w-full max-w-xs h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
+          <FooterColumn title="Index" className="lg:col-span-2 lg:col-start-6">
+            {[{ name: 'Home', href: '/' }, ...mainNav, { name: 'Privacy', href: '/privacy' }].map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="link">
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </FooterColumn>
 
-          {/* Copyright */}
-          <p className="text-xs sm:text-sm text-white/30">
-            &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
-          </p>
+          <FooterColumn title="Work" className="lg:col-span-3">
+            {projects.map((project) => (
+              <li key={project.slug}>
+                <Link href={`/work/${project.slug}`} className="link">
+                  {project.name}
+                </Link>
+              </li>
+            ))}
+          </FooterColumn>
+
+          <FooterColumn title="Elsewhere" className="lg:col-span-2">
+            <li>
+              <a href={siteConfig.links.github} target="_blank" rel="noopener noreferrer" className="link">
+                GitHub ↗
+              </a>
+            </li>
+            <li>
+              <a href={`mailto:${siteConfig.email}`} className="link">
+                Email ↗
+              </a>
+            </li>
+          </FooterColumn>
+        </div>
+
+        <div className="label flex flex-col gap-2 border-t border-night-line py-6 text-night-muted sm:flex-row sm:justify-between">
+          <span>
+            © {year} {siteConfig.name}
+          </span>
+          <span>{siteConfig.tagline}</span>
+        </div>
+      </div>
+
+      {/* Oversized wordmark, cropped by the bottom edge */}
+      <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden">
+        <div
+          className="container-site translate-y-[22%] whitespace-nowrap font-semibold leading-[0.8] tracking-[-0.05em] text-night-raised"
+          style={{ fontSize: 'calc((min(100vw, 95rem) - 2 * var(--gutter)) * 0.118)', fontVariationSettings: "'wdth' 125" }}
+        >
+          Distortion Labs
         </div>
       </div>
     </footer>
+  )
+}
+
+function FooterColumn({ title, className = '', children }: { title: string; className?: string; children: React.ReactNode }) {
+  return (
+    <div className={className}>
+      <p className="label mb-4 text-night-muted">{title}</p>
+      <ul className="space-y-2 text-small">{children}</ul>
+    </div>
   )
 }

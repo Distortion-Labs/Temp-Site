@@ -1,16 +1,38 @@
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { ImageResponse } from 'next/og'
+import { markPath } from '@/lib/mark'
 import { siteConfig } from '@/lib/site'
 
 export const alt = `${siteConfig.name} — ${siteConfig.tagline}`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
+/** Fetch a static TTF instance of a Google font, subset to `text`. Returns null if unavailable. */
+async function googleFont(query: string, text: string) {
+  try {
+    const css = await (await fetch(`https://fonts.googleapis.com/css2?family=${query}&text=${encodeURIComponent(text)}`)).text()
+    const sources = [...css.matchAll(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/g)]
+    const url = sources.at(-1)?.[1]
+    if (!url) return null
+    const res = await fetch(url)
+    return res.ok ? await res.arrayBuffer() : null
+  } catch {
+    return null
+  }
+}
+
 // Default social share image for every page; generated once at build time.
 export default async function OpengraphImage() {
-  const logo = await readFile(join(process.cwd(), 'app/icon.png'))
-  const logoSrc = `data:image/png;base64,${logo.toString('base64')}`
+  const display = 'DistortionLabs'
+  const mono = '(Independent software studio)Extensions — Tools — Websitesdistortion-labs.com'
+  const [sans, monoFont] = await Promise.all([
+    googleFont('Mona+Sans:wdth,wght@112.5,600', display),
+    googleFont('Geist+Mono:wght@400', mono),
+  ])
+
+  const fonts = [
+    ...(sans ? [{ name: 'Mona Sans', data: sans, weight: 600 as const, style: 'normal' as const }] : []),
+    ...(monoFont ? [{ name: 'Geist Mono', data: monoFont, weight: 400 as const, style: 'normal' as const }] : []),
+  ]
 
   return new ImageResponse(
     (
@@ -21,43 +43,40 @@ export default async function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: '72px 80px',
-          color: 'white',
-          backgroundColor: '#050208',
-          backgroundImage:
-            'radial-gradient(ellipse 70% 60% at 15% 0%, rgba(120, 80, 255, 0.45), transparent), radial-gradient(ellipse 60% 60% at 95% 100%, rgba(6, 182, 212, 0.3), transparent), radial-gradient(ellipse 50% 40% at 70% 30%, rgba(244, 63, 94, 0.18), transparent)',
+          padding: '56px 64px',
+          background: '#F1F1EE',
+          color: '#111110',
+          fontFamily: 'Mona Sans',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <img src={logoSrc} width={72} height={72} alt="" style={{ borderRadius: 16 }} />
-          <div style={{ display: 'flex', fontSize: 36, fontWeight: 600, letterSpacing: '-0.02em' }}>
-            Distortion<span style={{ color: '#c084fc' }}>Labs</span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <svg width="64" height="64" viewBox="-100 -100 200 200">
+            <path d={markPath} fill="#111110" />
+          </svg>
+          <div style={{ fontFamily: 'Geist Mono', fontSize: 22, color: '#6B6A65' }}>(Independent software studio)</div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 96, fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.03em' }}>
-            Software that
-          </div>
-          <div
-            style={{
-              fontSize: 96,
-              fontWeight: 700,
-              lineHeight: 1.05,
-              letterSpacing: '-0.03em',
-              backgroundImage: 'linear-gradient(135deg, #c084fc 0%, #22d3ee 55%, #fb7185 100%)',
-              backgroundClip: 'text',
-              color: 'transparent',
-            }}
-          >
-            bends reality
-          </div>
-          <div style={{ marginTop: 28, fontSize: 30, color: 'rgba(255, 255, 255, 0.6)', maxWidth: 900 }}>
-            Browser extensions and apps that transform how you interact with the web.
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', fontSize: 212, fontWeight: 600, lineHeight: 0.84, letterSpacing: '-0.05em', marginLeft: -8 }}>
+          <span>Distortion</span>
+          <span>Labs</span>
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            borderTop: '1.5px solid #111110',
+            paddingTop: 20,
+            fontFamily: 'Geist Mono',
+            fontSize: 22,
+            color: '#6B6A65',
+          }}
+        >
+          <span>Extensions — Tools — Websites</span>
+          <span>distortion-labs.com</span>
         </div>
       </div>
     ),
-    size
+    { ...size, fonts }
   )
 }

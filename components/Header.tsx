@@ -1,229 +1,133 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { mainNav } from '@/lib/site'
+import { mainNav, siteConfig } from '@/lib/site'
+import Mark from './Mark'
 
 export default function Header() {
   const pathname = usePathname()
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [scrollProgress, setScrollProgress] = useState(0)
+  const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-
-      // Scroll progress
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      setScrollProgress(docHeight > 0 ? window.scrollY / docHeight : 0)
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Lock body scroll when mobile menu is open
+  // Lock scrolling and close on Escape while the menu is open.
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    if (!open) return
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
     }
-  }, [isMobileMenuOpen])
+  }, [open])
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
-  const closeMenu = () => setIsMobileMenuOpen(false)
 
   return (
-    <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed top-0 left-0 right-0 z-50 safe-top"
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 ${
+        scrolled && !open ? 'border-b border-line bg-paper/90 backdrop-blur-md' : 'border-b border-transparent'
+      }`}
     >
-      <div className={`transition-all duration-500 ${isScrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'}`}>
-        <div className="container-main">
-          <nav
-            aria-label="Main"
-            className="relative flex items-center justify-between px-4 sm:px-6 py-3 rounded-2xl transition-all duration-500 overflow-hidden"
-          >
-            {/* Glass backdrop - CSS-based for performance */}
-            {isScrolled && (
-              <div
-                className="glass-frosted absolute inset-0 rounded-2xl pointer-events-none"
-                style={{ zIndex: 0 }}
-              />
-            )}
+      <div className="container-site flex h-[var(--header-h)] items-center justify-between gap-6">
+        <Link
+          href="/"
+          onClick={() => setOpen(false)}
+          className="group relative z-10 flex items-center gap-2.5"
+          aria-label={`${siteConfig.name} — home`}
+        >
+          <Mark className="h-[22px] w-[22px] transition-transform duration-700 ease-out group-hover:rotate-[30deg]" />
+          <span className="text-[15px] font-semibold tracking-[-0.015em]" style={{ fontVariationSettings: "'wdth' 112" }}>
+            Distortion Labs
+          </span>
+        </Link>
 
-            {/* Logo */}
+        <nav aria-label="Main" className="hidden items-center gap-9 md:flex">
+          {mainNav.map((item, i) => (
             <Link
-              href="/"
-              onClick={(e) => {
-                closeMenu()
-                if (pathname === '/') {
-                  e.preventDefault()
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }
-              }}
-              className="flex items-center gap-2.5 sm:gap-3 group relative z-10"
+              key={item.href}
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              className={`group flex items-start gap-1 text-[15px] transition-colors ${
+                isActive(item.href) ? 'text-ink' : 'text-muted hover:text-ink'
+              }`}
             >
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 group-hover:scale-105 transition-transform duration-300">
-                <Image
-                  src="/logo.png"
-                  alt="Distortion Labs"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-contain"
-                  preload
-                />
-              </div>
-              <span className="font-display text-lg sm:text-xl font-semibold text-white tracking-tight">
-                Distortion<span className="text-primary-400">Labs</span>
-              </span>
+              <span className={isActive(item.href) ? 'underline decoration-1 underline-offset-[6px]' : 'link'}>{item.name}</span>
+              <sup className="label mt-[-2px] text-[10px] text-muted">0{i + 1}</sup>
             </Link>
+          ))}
+        </nav>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1 relative z-10">
-              {mainNav.map((link) => {
-                const active = isActive(link.href)
-                return (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    aria-current={active ? 'page' : undefined}
-                    className={`relative px-4 lg:px-5 py-2.5 text-sm font-medium transition-colors duration-300 group ${active ? 'text-white' : 'text-white/60 hover:text-white'}`}
-                  >
-                    {link.name}
-                    <span className={`absolute bottom-1.5 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-full transition-all duration-300 ${active ? 'w-2/3' : 'w-0 group-hover:w-2/3'}`} />
-                  </Link>
-                )
-              })}
-            </div>
+        <Link href="/contact" className="btn hidden !min-h-[2.25rem] !px-4 md:inline-flex">
+          Start a project
+        </Link>
 
-            {/* Desktop CTA */}
-            <div className="hidden md:block relative z-10">
-              <Link
-                href="/products"
-                className="inline-block btn-glass px-5 lg:px-6 py-2.5 text-sm font-medium text-white rounded-xl hover:scale-105 transition-transform duration-300"
-              >
-                View Products
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl glass text-white z-10"
-              aria-label="Toggle menu"
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              <AnimatePresence mode="wait">
-                {isMobileMenuOpen ? (
-                  <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <X className="w-5 h-5" />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Menu className="w-5 h-5" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
-
-            {/* Scroll progress bar - bottom of nav */}
-            {isScrolled && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/[0.03] z-10">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-primary-500 to-cyan-500"
-                  style={{ width: `${scrollProgress * 100}%` }}
-                  transition={{ duration: 0.1 }}
-                />
-              </div>
-            )}
-          </nav>
-        </div>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls="menu"
+          className="relative z-10 flex h-11 items-center gap-2 text-[15px] md:hidden"
+        >
+          <span>{open ? 'Close' : 'Menu'}</span>
+          <span className="relative block h-2.5 w-4" aria-hidden="true">
+            <span
+              className={`absolute left-0 top-0 h-px w-full bg-current transition-transform duration-300 ${
+                open ? 'translate-y-[5px] rotate-45' : ''
+              }`}
+            />
+            <span
+              className={`absolute bottom-0 left-0 h-px w-full bg-current transition-transform duration-300 ${
+                open ? '-translate-y-[4px] -rotate-45' : ''
+              }`}
+            />
+          </span>
+        </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-void/80 backdrop-blur-sm md:hidden"
-              onClick={closeMenu}
-            />
-
-            {/* Menu Panel */}
-            <motion.div
-              id="mobile-menu"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="md:hidden absolute top-full left-0 right-0 px-5 pb-5"
+      {/* Mobile menu */}
+      <div
+        id="menu"
+        inert={!open}
+        className={`fixed inset-0 z-0 flex flex-col bg-paper pt-[var(--header-h)] transition-[opacity,visibility] duration-500 md:hidden ${
+          open ? 'visible opacity-100' : 'invisible opacity-0'
+        }`}
+      >
+        <nav aria-label="Mobile" className="container-site flex flex-1 flex-col justify-center gap-2 pb-16">
+          {[{ name: 'Home', href: '/' }, ...mainNav].map((item, i) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              aria-current={pathname === item.href ? 'page' : undefined}
+              className={`flex items-baseline gap-4 border-b border-line py-3 transition-[opacity,transform] duration-700 ease-out ${
+                open ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+              }`}
+              style={{ transitionDelay: open ? `${80 + i * 60}ms` : '0ms' }}
             >
-              <div className="glass-frosted rounded-2xl p-2 mt-2">
-                {mainNav.map((link, index) => (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 + 0.1 }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={closeMenu}
-                      aria-current={isActive(link.href) ? 'page' : undefined}
-                      className={`block w-full px-4 py-4 text-left text-base font-medium active:bg-white/5 rounded-xl transition-colors duration-200 ${isActive(link.href) ? 'text-white' : 'text-white/80 hover:text-white'}`}
-                    >
-                      {link.name}
-                    </Link>
-                  </motion.div>
-                ))}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.25 }}
-                  className="p-2 pt-0"
-                >
-                  <Link
-                    href="/products"
-                    onClick={closeMenu}
-                    className="block w-full btn-glass px-4 py-4 text-center text-base font-medium text-white rounded-xl"
-                  >
-                    View Products
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </motion.header>
+              <span className="label w-6 text-muted">0{i}</span>
+              <span className="text-[3rem] font-medium leading-none tracking-[-0.04em]" style={{ fontVariationSettings: "'wdth' 112" }}>
+                {item.name}
+              </span>
+            </Link>
+          ))}
+        </nav>
+        <div className="container-site label flex justify-between pb-8 text-muted safe-bottom">
+          <a href={`mailto:${siteConfig.email}`} className="link">
+            {siteConfig.email}
+          </a>
+          <span>{siteConfig.tagline}</span>
+        </div>
+      </div>
+    </header>
   )
 }

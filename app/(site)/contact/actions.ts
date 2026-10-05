@@ -1,6 +1,6 @@
 'use server'
 
-import { contactLimits, getContactConfig } from '@/lib/contact'
+import { contactLimits, contactTopics, getContactConfig } from '@/lib/contact'
 import { siteConfig } from '@/lib/site'
 
 type Field = 'name' | 'email' | 'message'
@@ -10,19 +10,19 @@ export interface ContactFormState {
   message?: string
   fieldErrors?: Partial<Record<Field, string>>
   /** Submitted values, echoed back so the form keeps them after a failed submit. */
-  values?: Record<Field, string>
+  values?: Record<Field | 'topic', string>
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export async function sendContactMessage(
-  _previous: ContactFormState,
-  formData: FormData
-): Promise<ContactFormState> {
+export async function sendContactMessage(_previous: ContactFormState, formData: FormData): Promise<ContactFormState> {
+  const rawTopic = String(formData.get('topic') ?? '')
   const values = {
     name: String(formData.get('name') ?? '').trim(),
     email: String(formData.get('email') ?? '').trim(),
     message: String(formData.get('message') ?? '').trim(),
+    // Only accept known topics so the subject line can't be used to inject text.
+    topic: (contactTopics as readonly string[]).includes(rawTopic) ? rawTopic : contactTopics[0],
   }
 
   // Honeypot: real visitors never see or fill this field, so pretend success for bots.
@@ -71,8 +71,8 @@ export async function sendContactMessage(
         from: config.from,
         to: [config.to],
         reply_to: values.email,
-        subject: `New message from ${subjectName} via ${siteConfig.name}`,
-        text: `Name: ${values.name}\nEmail: ${values.email}\n\n${values.message}`,
+        subject: `[${values.topic}] ${subjectName} via ${siteConfig.name}`,
+        text: `Topic: ${values.topic}\nName: ${values.name}\nEmail: ${values.email}\n\n${values.message}`,
       }),
     })
 
