@@ -1,52 +1,62 @@
 import type { Metadata, Viewport } from 'next'
-import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
+import { Mona_Sans, Geist_Mono, Fraunces } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { siteConfig } from '@/lib/site'
 import './globals.css'
 
-const outfit = Outfit({
+// Variable width axis (75–125) drives the "lens" typography.
+const sans = Mona_Sans({
   subsets: ['latin'],
+  axes: ['wdth'],
   display: 'swap',
-  variable: '--font-outfit',
-  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
 })
 
-const jakarta = Plus_Jakarta_Sans({
+const mono = Geist_Mono({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-jakarta',
-  weight: ['400', '500', '600'],
+  variable: '--font-mono',
 })
 
-const jetbrains = JetBrains_Mono({
+// Only used inside the sunurai.com mockup, so it isn't preloaded.
+const serif = Fraunces({
   subsets: ['latin'],
+  axes: ['opsz'],
+  style: ['normal', 'italic'],
   display: 'swap',
-  variable: '--font-jetbrains',
-  weight: ['400', '500'],
+  preload: false,
+  variable: '--font-serif',
 })
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5,
-  themeColor: '#050208',
+  themeColor: '#F1F1EE',
 }
 
 // Site-wide defaults. Pages override title/description/canonical via `pageMetadata`.
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} | ${siteConfig.tagline}`,
-    template: `%s | ${siteConfig.name}`,
+    default: `${siteConfig.name} — ${siteConfig.tagline}`,
+    template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
-  keywords: ['browser extensions', 'chrome extensions', 'productivity tools', 'multi-finder pro', 'multi search', 'highlight text', 'open source'],
+  keywords: [
+    'software studio',
+    'chrome extensions',
+    'browser extensions',
+    'web apps',
+    'Multi-Finder Pro',
+    "Writer's Canvas",
+    'Next.js',
+  ],
   authors: [{ name: siteConfig.name }],
   creator: siteConfig.name,
   openGraph: {
-    title: `${siteConfig.name} | ${siteConfig.tagline}`,
-    description: 'Free, open-source Chrome extensions and productivity tools by Distortion Labs.',
+    title: siteConfig.name,
+    description: siteConfig.description,
     type: 'website',
     locale: 'en_US',
     siteName: siteConfig.name,
@@ -54,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.name,
-    description: siteConfig.tagline,
+    description: siteConfig.description,
   },
   robots: {
     index: true,
@@ -62,20 +72,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${outfit.variable} ${jakarta.variable} ${jetbrains.variable}`}
+      className={`${sans.variable} ${mono.variable} ${serif.variable}`}
     >
-      <body className="font-sans antialiased bg-void text-white overflow-x-hidden">
-        {/* Cosmic background */}
-        <div className="fixed inset-0 bg-mesh pointer-events-none" aria-hidden="true" />
+      <body>
         {children}
         <Analytics />
       </body>

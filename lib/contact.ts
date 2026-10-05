@@ -22,3 +22,5 @@ export const contactLimits = {
   messageMin: 10,
   messageMax: 5000,
 }
+
+export const contactTopics = ['New project', 'Product support', 'Just saying hi'] as const

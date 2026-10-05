@@ -1,143 +1,58 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './lib/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Primary - Electric violet with depth
-        primary: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7e22ce',
-          800: '#6b21a8',
-          900: '#581c87',
-          950: '#3b0764',
-        },
-        // Accent - Luminous cyan for refractive highlights
-        cyan: {
-          50: '#ecfeff',
-          100: '#cffafe',
-          200: '#a5f3fc',
-          300: '#67e8f9',
-          400: '#22d3ee',
-          500: '#06b6d4',
-          600: '#0891b2',
-          700: '#0e7490',
-          800: '#155e75',
-          900: '#164e63',
-        },
-        // Rose accent for warmth
-        rose: {
-          400: '#fb7185',
-          500: '#f43f5e',
-          600: '#e11d48',
-        },
-        // Glass palette
-        glass: {
-          white: 'rgba(255, 255, 255, 0.06)',
-          'white-8': 'rgba(255, 255, 255, 0.08)',
-          'white-12': 'rgba(255, 255, 255, 0.12)',
-          'white-16': 'rgba(255, 255, 255, 0.16)',
-          border: 'rgba(255, 255, 255, 0.1)',
-          'border-light': 'rgba(255, 255, 255, 0.15)',
-        },
-        // Deep space backgrounds
-        void: {
-          DEFAULT: '#050208',
-          50: '#0a0510',
-          100: '#0d0714',
-          200: '#120a1c',
-          300: '#1a0f2e',
-        },
+        // Paper and ink: the site chrome is monochrome so the only saturated pixels belong to the work.
+        paper: { DEFAULT: '#F1F1EE', raised: '#F8F8F6', sunk: '#E8E8E4' },
+        ink: { DEFAULT: '#111110', soft: '#2A2A28' },
+        muted: '#6B6A65',
+        line: { DEFAULT: '#D9D8D2', strong: '#BDBCB5' },
+        night: { DEFAULT: '#0E0E0D', raised: '#191917', line: '#2C2C29', muted: '#8E8D87' },
+        signal: '#FFFF77',
       },
       fontFamily: {
-        // Distinctive display font
-        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
-        // Clean body font
-        sans: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
-        // Monospace for code/technical
-        mono: ['var(--font-jetbrains)', 'monospace'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
       },
       fontSize: {
-        // Fluid typography scale
-        'display-xl': ['clamp(3rem, 8vw, 6rem)', { lineHeight: '1', letterSpacing: '-0.02em' }],
-        'display-lg': ['clamp(2.5rem, 6vw, 4.5rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        'display-md': ['clamp(2rem, 4vw, 3rem)', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        'body-lg': ['1.125rem', { lineHeight: '1.7' }],
-        'body': ['1rem', { lineHeight: '1.7' }],
-        'body-sm': ['0.875rem', { lineHeight: '1.6' }],
+        display: ['clamp(2.75rem, 1.4rem + 5vw, 6.75rem)', { lineHeight: '0.94', letterSpacing: '-0.045em' }],
+        title: ['clamp(2.125rem, 1.3rem + 2.8vw, 4rem)', { lineHeight: '1', letterSpacing: '-0.035em' }],
+        heading: ['clamp(1.5rem, 1.15rem + 1.1vw, 2.25rem)', { lineHeight: '1.08', letterSpacing: '-0.025em' }],
+        lead: ['clamp(1.125rem, 1rem + 0.45vw, 1.4375rem)', { lineHeight: '1.42', letterSpacing: '-0.012em' }],
+        body: ['1rem', { lineHeight: '1.6' }],
+        small: ['0.875rem', { lineHeight: '1.5' }],
+        label: ['0.75rem', { lineHeight: '1.35', letterSpacing: '0.01em' }],
       },
-      backgroundImage: {
-        // Cosmic mesh gradient
-        'mesh': `
-          radial-gradient(ellipse 80% 50% at 20% -20%, rgba(120, 80, 255, 0.25), transparent),
-          radial-gradient(ellipse 60% 40% at 80% 0%, rgba(6, 182, 212, 0.2), transparent),
-          radial-gradient(ellipse 50% 30% at 10% 60%, rgba(244, 63, 94, 0.12), transparent),
-          radial-gradient(ellipse 40% 50% at 90% 80%, rgba(120, 80, 255, 0.15), transparent)
-        `,
-        // Glass refraction gradient
-        'refraction': 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.08) 100%)',
-        // Shimmer effect
-        'shimmer': 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+      maxWidth: {
+        site: '95rem',
+        prose: '38rem',
       },
-      boxShadow: {
-        'glass': '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
-        'glass-hover': '0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.15)',
-        'glow-purple': '0 0 60px -12px rgba(168, 85, 247, 0.5)',
-        'glow-cyan': '0 0 60px -12px rgba(6, 182, 212, 0.5)',
-        'glow-rose': '0 0 60px -12px rgba(244, 63, 94, 0.4)',
-        'inner-shine': 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
-      },
-      animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'float-delayed': 'float 6s ease-in-out infinite 2s',
-        'float-slow': 'float 8s ease-in-out infinite',
-        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
-        'shimmer': 'shimmer 2.5s ease-in-out infinite',
-        'morph': 'morph 8s ease-in-out infinite',
-        'spin-slow': 'spin 25s linear infinite',
-        'gradient-shift': 'gradient-shift 6s ease infinite',
+      transitionTimingFunction: {
+        out: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        quiet: 'cubic-bezier(0.2, 0.7, 0.2, 1)',
       },
       keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
-          '50%': { transform: 'translateY(-20px) rotate(2deg)' },
+        rise: {
+          from: { opacity: '0', transform: 'translateY(12px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
         },
-        'pulse-glow': {
-          '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
-          '50%': { opacity: '1', transform: 'scale(1.05)' },
+        'draw-x': {
+          from: { transform: 'scaleX(0)' },
+          to: { transform: 'scaleX(1)' },
         },
-        shimmer: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(100%)' },
-        },
-        morph: {
-          '0%, 100%': { borderRadius: '60% 40% 30% 70%/60% 30% 70% 40%' },
-          '50%': { borderRadius: '30% 60% 70% 40%/50% 60% 30% 60%' },
-        },
-        'gradient-shift': {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
+        blink: {
+          '0%, 49%': { opacity: '1' },
+          '50%, 100%': { opacity: '0' },
         },
       },
-      borderRadius: {
-        '4xl': '2rem',
-        '5xl': '2.5rem',
-      },
-      spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '128': '32rem',
+      animation: {
+        rise: 'rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both',
+        'draw-x': 'draw-x 1.2s cubic-bezier(0.16, 1, 0.3, 1) both',
+        blink: 'blink 1.05s steps(1) infinite',
       },
     },
   },
