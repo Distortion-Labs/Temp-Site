@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { ArrowDown, Chrome } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 
 // Dynamic imports to prevent SSR issues with canvas/WebGL
 const ChromaticText = dynamic(() => import('./ChromaticText'), {
@@ -18,13 +19,6 @@ const ColorBends = dynamic(() => import('./ColorBends'), {
 })
 
 export default function Hero() {
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   return (
     <section className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5">
       {/* ColorBends WebGL background - using R3F Canvas for stable mobile rendering */}
@@ -71,22 +65,22 @@ export default function Hero() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-          <button
-            onClick={() => scrollToSection('#products')}
+          <Link
+            href="/products"
             className="w-full sm:w-auto btn-primary px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white rounded-xl sm:rounded-2xl"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               <Chrome className="w-4 h-4 sm:w-5 sm:h-5" />
               See Our Extensions
             </span>
-          </button>
+          </Link>
 
-          <button
-            onClick={() => scrollToSection('#about')}
-            className="w-full sm:w-auto btn-glass px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white/80 rounded-xl sm:rounded-2xl"
+          <Link
+            href="/about"
+            className="w-full sm:w-auto btn-glass px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-medium text-white/80 text-center rounded-xl sm:rounded-2xl"
           >
             Learn More
-          </button>
+          </Link>
         </div>
 
         {/* Tech stack hint */}
@@ -109,14 +103,14 @@ export default function Hero() {
         transition={{ delay: 0.5 }}
         className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2"
       >
-        <button
-          onClick={() => scrollToSection('#products')}
+        <a
+          href="#products"
           className="flex flex-col items-center gap-2 text-white/30 hover:text-white/50 transition-colors animate-bounce-slow"
           aria-label="Scroll to products"
         >
           <span className="text-xs hidden sm:block">Scroll</span>
           <ArrowDown className="w-4 h-4" />
-        </button>
+        </a>
       </motion.div>
     </section>
   )

@@ -1,8 +1,8 @@
 'use client'
 
-/* eslint-disable react/no-unknown-property */
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, useState, MutableRefObject } from 'react'
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, MutableRefObject } from 'react'
+import { usePrefersReducedMotion } from '@/lib/hooks'
 import { Color } from 'three'
 import type { Mesh } from 'three'
 
@@ -129,15 +129,7 @@ export default function Silk({
   const meshRef = useRef<Mesh>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const visibleRef = useRef(true)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mq.matches)
-    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches)
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const el = containerRef.current

@@ -1,44 +1,26 @@
-'use client'
-
 import { Github, Twitter } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { mainNav, siteConfig } from '@/lib/site'
 
-const navLinks = [
-  { name: 'Products', href: '#products' },
-  { name: 'About', href: '#about' },
-  { name: 'Contact', href: '#contact' },
-]
+const footerLinks = [...mainNav, { name: 'Privacy', href: '/privacy' }]
 
 const socialLinks = [
-  { name: 'GitHub', icon: Github, href: 'https://github.com/Distortion-Labs' },
-  { name: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
+  { name: 'GitHub', icon: Github, href: siteConfig.links.github },
+  { name: 'Twitter', icon: Twitter, href: siteConfig.links.twitter },
 ]
 
 export default function Footer() {
-  const scrollToSection = (href: string) => {
-    if (href.startsWith('#')) {
-      const element = document.querySelector(href)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-      }
-    }
-  }
-
   return (
-    <footer className="relative py-12 sm:py-16 safe-bottom">
-      <div className="container-main">
+    // Background continues the bottom edge of GradientSection so the two read as one surface
+    <footer className="relative py-12 sm:py-16 safe-bottom bg-[#0d0618]">
+      <div className="absolute inset-0 bg-grain pointer-events-none" />
+
+      <div className="container-main relative">
         {/* Main footer content */}
         <div className="flex flex-col items-center text-center">
           {/* Logo */}
-          <Link
-            href="/"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
-            className="flex items-center gap-2.5 mb-6 group"
-          >
+          <Link href="/" className="flex items-center gap-2.5 mb-6 group">
             <div className="relative w-9 h-9 group-hover:scale-105 transition-transform duration-300">
               <Image
                 src="/logo.png"
@@ -54,15 +36,15 @@ export default function Footer() {
           </Link>
 
           {/* Navigation */}
-          <nav className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 mb-6">
-            {navLinks.map((link) => (
-              <button
+          <nav aria-label="Footer" className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 mb-6">
+            {footerLinks.map((link) => (
+              <Link
                 key={link.name}
-                onClick={() => scrollToSection(link.href)}
+                href={link.href}
                 className="text-sm text-white/40 hover:text-white transition-colors duration-200"
               >
                 {link.name}
-              </button>
+              </Link>
             ))}
           </nav>
 
@@ -87,7 +69,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <p className="text-xs sm:text-sm text-white/30">
-            &copy; {new Date().getFullYear()} Distortion Labs. All rights reserved.
+            &copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
         </div>
       </div>

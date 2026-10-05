@@ -1,8 +1,28 @@
 'use client'
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState, useRef, useId, useCallback } from 'react'
+import { useEffect, useRef, useId, useCallback, useSyncExternalStore } from 'react'
+import { subscribeNoop } from '@/lib/hooks'
 import './GlassSurface.css'
+
+let svgFiltersSupported: boolean | undefined
+
+// SVG filters inside backdrop-filter only render correctly in Chromium-based browsers.
+function supportsSVGFilters() {
+  if (svgFiltersSupported === undefined) {
+    const ua = navigator.userAgent
+    const isWebkit = /Safari/.test(ua) && !/Chrome/.test(ua)
+    const isFirefox = /Firefox/.test(ua)
+    if (isWebkit || isFirefox) {
+      svgFiltersSupported = false
+    } else {
+      const div = document.createElement('div')
+      div.style.backdropFilter = 'url(#glass-filter)'
+      svgFiltersSupported = div.style.backdropFilter !== ''
+    }
+  }
+  return svgFiltersSupported
+}
 
 interface GlassSurfaceProps {
   children?: React.ReactNode
@@ -64,7 +84,7 @@ export default function GlassSurface({
   const redGradId = `red-grad-${uniqueId}`
   const blueGradId = `blue-grad-${uniqueId}`
 
-  const [svgSupported, setSvgSupported] = useState(false)
+  const svgSupported = useSyncExternalStore(subscribeNoop, supportsSVGFilters, () => false)
 
   const containerRef = useRef<HTMLElement>(null)
   const feImageRef = useRef<SVGFEImageElement>(null)
@@ -126,7 +146,7 @@ export default function GlassSurface({
     xChannel, yChannel, mixBlendMode
   ])
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   useEffect(() => {
     if (!containerRef.current) return
     const el = containerRef.current
@@ -141,19 +161,6 @@ export default function GlassSurface({
     }
   }, [updateDisplacementMap])
 
-  useEffect(() => {
-    const supportsSVGFilters = () => {
-      if (typeof window === 'undefined') return false
-      const isWebkit = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
-      const isFirefox = /Firefox/.test(navigator.userAgent)
-      if (isWebkit || isFirefox) return false
-      const div = document.createElement('div')
-      div.style.backdropFilter = `url(#${filterId})`
-      return div.style.backdropFilter !== ''
-    }
-    setSvgSupported(supportsSVGFilters())
-  }, [])
-
   const containerStyle: React.CSSProperties = {
     ...style,
     borderRadius: `${borderRadius}px`,
@@ -162,8 +169,13 @@ export default function GlassSurface({
     '--filter-id': `url(#${filterId})`
   } as React.CSSProperties
 
+  // `as` is polymorphic; narrow it to the props this component actually forwards.
+  const Container = Tag as React.ComponentType<
+    React.AnchorHTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }
+  >
+
   return (
-    <Tag
+    <Container
       ref={containerRef}
       className={`glass-surface ${svgSupported ? 'glass-surface--svg' : 'glass-surface--fallback'} ${className}`}
       style={containerStyle}
@@ -210,6 +222,6 @@ export default function GlassSurface({
       </svg>
 
       <div className={`glass-surface__content ${contentClassName}`}>{children}</div>
-    </Tag>
+    </Container>
   )
 }
