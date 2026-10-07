@@ -2,6 +2,8 @@ import { ImageResponse } from 'next/og'
 import { markPath } from '@/lib/mark'
 import { siteConfig } from '@/lib/site'
 
+const domain = new URL(siteConfig.url).host
+
 export const alt = `${siteConfig.name} — ${siteConfig.tagline}`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
@@ -22,8 +24,8 @@ async function googleFont(query: string, text: string) {
 
 // Default social share image for every page; generated once at build time.
 export default async function OpengraphImage() {
-  const display = 'DistortionLabs'
-  const mono = '(Independent software studio)Extensions — Tools — Websitesdistortion-labs.com'
+  const display = 'DistortionLens'
+  const mono = `(Independent software studio)Extensions — Tools — Websites${domain}`
   const [sans, monoFont] = await Promise.all([
     googleFont('Mona+Sans:wdth,wght@112.5,600', display),
     googleFont('Geist+Mono:wght@400', mono),
@@ -58,7 +60,7 @@ export default async function OpengraphImage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', fontSize: 212, fontWeight: 600, lineHeight: 0.84, letterSpacing: '-0.05em', marginLeft: -8 }}>
           <span>Distortion</span>
-          <span>Labs</span>
+          <span>Lens</span>
         </div>
 
         <div
@@ -73,7 +75,7 @@ export default async function OpengraphImage() {
           }}
         >
           <span>Extensions — Tools — Websites</span>
-          <span>distortion-labs.com</span>
+          <span>{domain}</span>
         </div>
       </div>
     ),

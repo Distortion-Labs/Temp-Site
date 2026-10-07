@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 import { ArrowUpRight } from 'lucide-react'
 import { siteConfig } from '@/lib/site'
 
+const [emailUser, emailDomain] = siteConfig.email.split('@')
+
 /** The big "start a conversation" block at the top of the footer. Hidden on the contact page itself. */
 export default function FooterCta() {
   const pathname = usePathname()
@@ -21,7 +23,10 @@ export default function FooterCta() {
           href={`mailto:${siteConfig.email}`}
           className="group inline-flex items-center gap-3 text-heading font-medium text-paper"
         >
-          <span className="link">{siteConfig.email}</span>
+          <span className="link [overflow-wrap:anywhere]">
+            {emailUser}@<wbr />
+            {emailDomain}
+          </span>
           <ArrowUpRight className="nudge h-6 w-6 sm:h-7 sm:w-7" strokeWidth={1.5} />
         </a>
         <Link href="/contact" className="btn btn-night self-start sm:self-auto">

@@ -7,7 +7,7 @@ import { capabilities, principles, stack } from '@/lib/site'
 export const metadata = pageMetadata({
   title: 'Studio',
   description:
-    'Distortion Labs is a small, independent software studio. We make our own products and build websites for a small number of clients.',
+    'DistortionLens is a small, independent software studio. We make our own products and build websites for a small number of clients.',
   path: '/studio',
 })
 
@@ -15,7 +15,7 @@ export default function StudioPage() {
   return (
     <>
       <PageIntro label="Studio" title="Small software, carefully made.">
-        Distortion Labs is an independent software studio. We make our own products — browser extensions and creative
+        DistortionLens is an independent software studio. We make our own products — browser extensions and creative
         tools — and build websites for a small number of clients.
       </PageIntro>
 
@@ -27,7 +27,7 @@ export default function StudioPage() {
           </h2>
           <div className="space-y-6 text-lead text-pretty sm:col-span-9 lg:col-span-7">
             <p>
-              Distortion Labs started with a simple idea: build the tools we actually want to use. We were tired of
+              DistortionLens started with a simple idea: build the tools we actually want to use. We were tired of
               software that makes simple things complicated.
             </p>
             <p className="text-muted">

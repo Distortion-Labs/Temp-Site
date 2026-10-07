@@ -1,5 +1,5 @@
 /**
- * The Distortion Labs mark: twelve identical blades arranged like a camera aperture.
+ * The DistortionLens mark: twelve identical blades arranged like a camera aperture.
  *
  * It's a rationalised version of the original glass render. Each blade is a four-point shard whose
  * trailing edge runs parallel to the previous blade's leading edge, so every gap has the same width.

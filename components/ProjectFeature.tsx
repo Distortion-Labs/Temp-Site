@@ -8,8 +8,8 @@ import ProjectMockup from './mockups/ProjectMockup'
 export default function ProjectFeature({ project }: { project: Project }) {
   return (
     <article id={project.slug} className="container-site scroll-mt-24 border-t border-line py-16 sm:py-24">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-6">
-        <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start lg:pr-8">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-6">
+        <div className="min-w-0 lg:sticky lg:top-28 lg:col-span-4 lg:self-start lg:pr-8">
           <p className="label flex gap-3 text-muted">
             <span>{project.index}</span>
             <span>{project.kind}</span>
@@ -31,7 +31,7 @@ export default function ProjectFeature({ project }: { project: Project }) {
             )}
           </div>
         </div>
-        <div className="lg:col-span-8">
+        <div className="min-w-0 lg:col-span-8">
           <ProjectMockup slug={project.slug} />
         </div>
       </div>

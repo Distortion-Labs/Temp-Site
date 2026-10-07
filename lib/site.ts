@@ -1,11 +1,13 @@
 export const siteConfig = {
-  name: 'Distortion Labs',
+  name: 'DistortionLens',
+  /** Registered company name: used in the copyright line, privacy policy and structured data. */
+  legalName: 'DistortionLens LLC',
   tagline: 'Independent software studio',
   description:
-    'Distortion Labs is an independent software studio. We design and build browser extensions, creative tools and websites, from first sketch to shipped product.',
+    'DistortionLens is an independent software studio. We design and build browser extensions, creative tools and websites, from first sketch to shipped product.',
   // Canonical origin used for metadata, sitemap and structured data. Override per environment if needed.
-  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://distortion-labs.com').replace(/\/$/, ''),
-  email: 'contact@distortion-labs.com',
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://distortionlens.com').replace(/\/$/, ''),
+  email: 'contact@distortionlens.com',
   links: {
     github: 'https://github.com/Distortion-Labs',
   },

@@ -15,6 +15,7 @@ const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: siteConfig.name,
+  legalName: siteConfig.legalName,
   url: siteConfig.url,
   logo: `${siteConfig.url}/icon-512.png`,
   email: siteConfig.email,
@@ -38,7 +39,7 @@ export default function Home() {
           </div>
 
           <div className="relative">
-            <LensWordmark lines={['Distortion', 'Labs']} label="Distortion Labs" />
+            <LensWordmark lines={['Distortion', 'Lens']} label={siteConfig.name} />
             <div className="mt-10 animate-rise [animation-delay:200ms] lg:absolute lg:bottom-[0.5%] lg:left-[57%] lg:right-0 lg:mt-0">
               <p className="max-w-[30ch] text-lead text-pretty">
                 An independent software studio. We design and build browser extensions, creative tools and

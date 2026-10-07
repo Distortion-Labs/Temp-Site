@@ -7,9 +7,11 @@ import ContactForm from './ContactForm'
 
 export const metadata = pageMetadata({
   title: 'Contact',
-  description: 'Start a project with Distortion Labs, ask about one of our products, or just say hello.',
+  description: 'Start a project with DistortionLens, ask about one of our products, or just say hello.',
   path: '/contact',
 })
+
+const [emailUser, emailDomain] = siteConfig.email.split('@')
 
 const details = [
   { label: 'Email', value: siteConfig.email, href: `mailto:${siteConfig.email}` },
@@ -28,8 +30,8 @@ export default function ContactPage() {
       </PageIntro>
 
       <section aria-label="Get in touch" className="container-site pb-28 pt-20 sm:pb-40 sm:pt-28">
-        <div className="grid gap-16 sm:grid-cols-12 sm:gap-6">
-          <dl className="space-y-6 sm:col-span-3">
+        <div className="grid grid-cols-1 gap-16 sm:grid-cols-12 sm:gap-6">
+          <dl className="min-w-0 space-y-6 sm:col-span-3">
             {details.map((d) => (
               <div key={d.label}>
                 <dt className="label text-muted">{d.label}</dt>
@@ -51,7 +53,7 @@ export default function ContactPage() {
             ))}
           </dl>
 
-          <div className="sm:col-span-9 lg:col-span-7">
+          <div className="min-w-0 sm:col-span-9 lg:col-span-7">
             {formEnabled ? (
               <ContactForm />
             ) : (
@@ -61,7 +63,10 @@ export default function ContactPage() {
                   href={`mailto:${siteConfig.email}`}
                   className="group mt-4 inline-flex items-center gap-3 text-[clamp(1.5rem,1rem+2.4vw,3rem)] font-medium tracking-[-0.03em]"
                 >
-                  <span className="link">{siteConfig.email}</span>
+                  <span className="link [overflow-wrap:anywhere]">
+                    {emailUser}@<wbr />
+                    {emailDomain}
+                  </span>
                   <ArrowUpRight className="nudge h-[0.8em] w-[0.8em]" strokeWidth={1.25} />
                 </a>
                 <p className="mt-6 max-w-[44ch] text-small text-muted">

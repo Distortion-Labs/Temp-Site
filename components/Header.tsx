@@ -47,7 +47,7 @@ export default function Header() {
         >
           <Mark className="h-[22px] w-[22px] transition-transform duration-700 ease-out group-hover:rotate-[30deg]" />
           <span className="text-[15px] font-semibold tracking-[-0.015em]" style={{ fontVariationSettings: "'wdth' 112" }}>
-            Distortion Labs
+            {siteConfig.name}
           </span>
         </Link>
 
@@ -121,7 +121,7 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-        <div className="container-site label flex justify-between pb-8 text-muted safe-bottom">
+        <div className="container-site label flex flex-wrap justify-between gap-x-6 gap-y-1 pb-8 text-muted safe-bottom">
           <a href={`mailto:${siteConfig.email}`} className="link">
             {siteConfig.email}
           </a>

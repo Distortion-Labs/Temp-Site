@@ -1,6 +1,6 @@
-# Distortion Labs
+# DistortionLens
 
-Website for [Distortion Labs](https://distortion-labs.com), an independent software studio. Built with Next.js (App Router) and deployed on Vercel.
+Website for [DistortionLens](https://distortionlens.com), an independent software studio (DistortionLens LLC). Built with Next.js (App Router) and deployed on Vercel.
 
 **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 3 · Vercel Analytics
 
@@ -54,11 +54,16 @@ npm run dev        # http://localhost:3000
 2. Add any environment variables (below) under **Project → Settings → Environment Variables**.
 3. Deploy. Every push to `main` deploys to production and every pull request gets a preview URL.
 
-### Moving the custom domain from GitHub Pages
+### Domains: distortionlens.com, and the old distortion-labs.com
 
-1. In Vercel, open **Project → Settings → Domains** and add `distortion-labs.com` (and `www.distortion-labs.com` if you use it).
-2. Update the DNS records at your registrar to the values Vercel shows on that page.
-3. Once the domain verifies on Vercel, disable GitHub Pages under the repository's **Settings → Pages**.
+The site lives at `distortionlens.com`. The old `distortion-labs.com` (previously on GitHub Pages) should keep working and forward to it.
+
+1. In Vercel, open **Project → Settings → Domains** and add `distortionlens.com` and `www.distortionlens.com`. Update DNS at your registrar to the values Vercel shows.
+2. Add `distortion-labs.com` and `www.distortion-labs.com` to the same project and point their DNS at Vercel too. `next.config.ts` permanently redirects every path on the old host to the same path on `distortionlens.com` (you can also set the redirect on the domain in Vercel; the two don't conflict).
+3. Once the new domain verifies, disable GitHub Pages under the repository's **Settings → Pages**.
+4. Update anything that links to the old domain from outside this repo — for example the Site URL and redirect URLs of any Supabase project that sends people to `/email-verified`.
+
+Company details (brand name, legal name `DistortionLens LLC`, email, domain) live in `lib/site.ts`.
 
 ### Analytics
 
@@ -70,10 +75,10 @@ See [`.env.example`](.env.example). All are optional.
 
 | Variable               | Purpose                                                                                       |
 | ---------------------- | --------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata and the sitemap. Defaults to `https://distortion-labs.com`.     |
+| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata and the sitemap. Defaults to `https://distortionlens.com`.       |
 | `RESEND_API_KEY`       | [Resend](https://resend.com) API key used to deliver contact form messages.                   |
-| `CONTACT_FROM_EMAIL`   | Sender address, e.g. `Distortion Labs <noreply@distortion-labs.com>`. Its domain must be verified in Resend. |
-| `CONTACT_TO_EMAIL`     | Inbox that receives messages. Defaults to `contact@distortion-labs.com`.                      |
+| `CONTACT_FROM_EMAIL`   | Sender address, e.g. `DistortionLens <noreply@distortionlens.com>`. Its domain must be verified in Resend. |
+| `CONTACT_TO_EMAIL`     | Inbox that receives messages. Defaults to `contact@distortionlens.com`.                       |
 
 ### Contact form
 

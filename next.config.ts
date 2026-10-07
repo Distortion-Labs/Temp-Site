@@ -13,8 +13,16 @@ const nextConfig: NextConfig = {
     return [{ source: '/:path*', headers: securityHeaders }]
   },
   async redirects() {
-    // Earlier drafts of the site used /products and /about.
     return [
+      // The studio moved from distortion-labs.com to distortionlens.com. Keep old links (and
+      // email-verification links) working by sending every path on the old host to the new one.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: '(?:www\\.)?distortion-labs\\.com' }],
+        destination: 'https://distortionlens.com/:path*',
+        permanent: true,
+      },
+      // Earlier drafts of the site used /products and /about.
       { source: '/products', destination: '/work', permanent: true },
       { source: '/products/:slug', destination: '/work/:slug', permanent: true },
       { source: '/about', destination: '/studio', permanent: true },

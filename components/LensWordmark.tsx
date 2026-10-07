@@ -27,29 +27,27 @@ export default function LensWordmark({ lines, label, className = '' }: LensWordm
   const rootRef = useRef<HTMLHeadingElement>(null)
   const reducedMotion = usePrefersReducedMotion()
 
-  // Fit the first line to the available width.
+  // Fit the first line to the available width. The measuring copy is removed straight away: left in
+  // place, its 100px text would widen the page and cause horizontal scrolling on phones.
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const measure = document.createElement('span')
-    measure.setAttribute('aria-hidden', 'true')
-    measure.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-size:100px;font-weight:${WGHT_BASE};letter-spacing:${LETTER_SPACING};font-variation-settings:'wdth' ${WDTH_BASE}`
-    measure.textContent = lines[0]
-    root.appendChild(measure)
 
     const fit = () => {
-      const available = root.clientWidth
+      const measure = document.createElement('span')
+      measure.setAttribute('aria-hidden', 'true')
+      measure.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-size:100px;font-weight:${WGHT_BASE};letter-spacing:${LETTER_SPACING};font-variation-settings:'wdth' ${WDTH_BASE}`
+      measure.textContent = lines[0]
+      root.appendChild(measure)
       const natural = measure.getBoundingClientRect().width
-      if (natural > 0) root.style.setProperty('--lens-size', `${(available / natural) * 100 * 0.995}px`)
+      measure.remove()
+      if (natural > 0) root.style.setProperty('--lens-size', `${(root.clientWidth / natural) * 100 * 0.995}px`)
     }
     fit()
     document.fonts?.ready.then(fit)
     const observer = new ResizeObserver(fit)
     observer.observe(root)
-    return () => {
-      observer.disconnect()
-      measure.remove()
-    }
+    return () => observer.disconnect()
   }, [lines])
 
   // Lens interaction.

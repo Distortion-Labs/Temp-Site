@@ -7,7 +7,7 @@ import { projects } from '@/lib/work'
 
 export const metadata = pageMetadata({
   title: 'Work',
-  description: "Products and websites by Distortion Labs: Multi-Finder Pro, Writer's Canvas and sunurai.com.",
+  description: "Products and websites by DistortionLens: Multi-Finder Pro, Writer's Canvas and sunurai.com.",
   path: '/work',
 })
 

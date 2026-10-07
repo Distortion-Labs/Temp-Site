@@ -17,7 +17,7 @@ export default function Footer() {
             <Link href="/" className="group inline-flex items-center gap-3" aria-label={`${siteConfig.name} — home`}>
               <Mark className="h-8 w-8" />
               <span className="text-[15px] font-semibold tracking-[-0.015em]" style={{ fontVariationSettings: "'wdth' 112" }}>
-                Distortion Labs
+                {siteConfig.name}
               </span>
             </Link>
             <p className="mt-5 max-w-[30ch] text-small text-night-muted">{siteConfig.description}</p>
@@ -59,7 +59,7 @@ export default function Footer() {
 
         <div className="label flex flex-col gap-2 border-t border-night-line py-6 text-night-muted sm:flex-row sm:justify-between">
           <span>
-            © {year} {siteConfig.name}
+            © {year} {siteConfig.legalName}
           </span>
           <span>{siteConfig.tagline}</span>
         </div>
@@ -69,9 +69,9 @@ export default function Footer() {
       <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden">
         <div
           className="container-site translate-y-[22%] whitespace-nowrap font-semibold leading-[0.8] tracking-[-0.05em] text-night-raised"
-          style={{ fontSize: 'calc((min(100vw, 95rem) - 2 * var(--gutter)) * 0.118)', fontVariationSettings: "'wdth' 125" }}
+          style={{ fontSize: 'calc((min(100vw, 95rem) - 2 * var(--gutter)) * 0.14)', fontVariationSettings: "'wdth' 125" }}
         >
-          Distortion Labs
+          {siteConfig.name}
         </div>
       </div>
     </footer>

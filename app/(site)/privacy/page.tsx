@@ -8,15 +8,16 @@ export const metadata = pageMetadata({
   path: '/privacy',
 })
 
-const lastUpdated = 'October 5, 2026'
+const lastUpdated = 'October 7, 2026'
 
 const sections = [
   {
     title: 'What this covers',
     body: (
       <p>
-        This policy explains what information {siteConfig.name} collects through this website and how we use it. If you
-        have questions about how one of our products handles data, contact us and we&apos;ll be happy to help.
+        This policy explains what information {siteConfig.legalName} (&ldquo;{siteConfig.name}&rdquo;, &ldquo;we&rdquo;)
+        collects through this website and how we use it. If you have questions about how one of our products handles
+        data, contact us and we&apos;ll be happy to help.
       </p>
     ),
   },

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { markBlades, MARK_RADIUS } from '@/lib/mark'
+import { siteConfig } from '@/lib/site'
 
 const INNER = 0.405 * MARK_RADIUS // radius of the inner tips
 
@@ -14,7 +15,7 @@ export default function ApertureStudy() {
     <div className="grid gap-6 lg:grid-cols-2">
       <figure>
         <div className="relative grid aspect-square place-items-center overflow-hidden rounded-md bg-night">
-          <Image src="/logo.png" alt="The original glass render of the Distortion Labs mark" width={900} height={900} className="h-[78%] w-[78%] object-contain" />
+          <Image src="/logo.png" alt={`The original glass render of the ${siteConfig.name} mark`} width={900} height={900} className="h-[78%] w-[78%] object-contain" />
         </div>
         <figcaption className="label mt-3 flex justify-between text-muted">
           <span>A — Original render</span>
